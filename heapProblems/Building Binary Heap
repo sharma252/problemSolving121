@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+//Heapify helper function that perform the actual heapification.
+void heapify(int arr[],int n,int cur){
+    //Base condition check if the cur is leaf node or not
+    if(cur==n)
+        return;
+
+    //Find left && right child respectively using given formula && set largest to cur &&
+    //Chech if we need to heapify or not
+    int leftChild = 2*cur+1;
+    int rightChild = 2*cur+2;
+    int largest = cur;
+
+    //If either of left or right child is greater then the largest that means we need to heapify.
+    if(leftChild<n && arr[leftChild]>arr[largest])
+        largest=leftChild;
+    if(rightChild<n && arr[rightChild]>arr[largest])
+        largest=rightChild;
+
+    //We make a check if largest is changed or not
+    //If it does heapify it, and recursively call the function to find any abnormality
+    //is present in our heap or not.  
+    if(largest!=cur){
+        swap(arr[largest],arr[cur]);
+        heapify(arr,n,largest);
+    }
+
+}
+
+//Building the max heap.
+//The oputput from this function do not print heap sort but if you build a perfect binary tree then :
+//It surely follows Max heap property.
+void buildHeap(int arr[],int n){
+  //We apply heapify on internal nodes only as leaf node always follow heap property.
+  //In leaf node also we take nodes nearer to leaf and then move toward the parent i.e. bottom-up approach.
+    for(int i=(n/2)-1;i>=0;i--)
+        heapify(arr,n,i);
+
+}
+
+int main(){
+    int n;
+    cin>>n;
+
+    int arr[n];
+
+    for(int i=0;i<n;i++)
+        cin>>arr[i];
+
+
+    buildHeap(arr,n);
+
+    for(int i=0;i<n;i++)
+        cout<<arr[i]<<" ";
+
+    return 0;
+}

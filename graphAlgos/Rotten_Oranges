@@ -1,0 +1,140 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+//First step:
+struct node{
+    int x_co;
+    int y_co;
+};
+
+//Second step:
+bool is_valid(int x_co,int y_co,int ext_x,int ext_y){
+    return (x_co>=0 && y_co>=0 && x_co<ext_x && y_co<ext_y);
+}
+
+//Third Step: 
+bool is_delim(node temp) { 
+  return (temp.x_co == -1 && temp.y_co == -1); 
+} 
+
+//Fourth step:
+bool is_all_rotten(vector<vector<int>>& grid){
+    
+    for(auto it_x : grid){
+        for(auto it_y : it_x){
+            if(it_y==1)
+                return false;
+        }
+    }
+    return true;
+}
+
+class Solution {
+    public:
+    //Function to find minimum time required to rot all oranges. 
+    int oranges_rotting(vector<vector<int>>& grid) {
+        // Code here
+        int ext_x = grid.size();
+        int ext_y = grid[0].size();
+        
+        queue<node> q;
+        node temp;
+        int ans=0;
+        
+        for(int it_x=0;it_x<ext_x;it_x++){
+            for(int it_y=0;it_y<ext_y;it_y++){
+                if(grid[it_x][it_y]==2){
+                    temp.x_co = it_x;
+                    temp.y_co = it_y;
+                    q.push(temp);
+                }
+            }
+        }
+        
+        //Delimiter
+        temp.x_co = -1;
+        temp.y_co = -1;
+        q.push(temp);
+        
+        while(!q.empty()){
+            bool flag = false;
+            
+            while(!is_delim(q.front())){
+                temp = q.front();
+                
+                if(is_valid(temp.x_co+1,temp.y_co,ext_x,ext_y) && grid[temp.x_co+1][temp.y_co] == 1){
+                    if(!flag){
+                        flag=true;
+                        ans++;
+                    }
+                    grid[temp.x_co+1][temp.y_co]=2;
+                    temp.x_co++;
+                    q.push(temp);
+                    temp.x_co--;
+                }
+                if(is_valid(temp.x_co-1,temp.y_co,ext_x,ext_y) && grid[temp.x_co-1][temp.y_co] == 1){
+                    if(!flag){
+                        flag=true;
+                        ans++;
+                    }
+                    grid[temp.x_co-1][temp.y_co]=2;
+                    temp.x_co--;
+                    q.push(temp);
+                    temp.x_co++;
+                }
+                if(is_valid(temp.x_co,temp.y_co+1,ext_x,ext_y) && grid[temp.x_co][temp.y_co+1] == 1){
+                    if(!flag){
+                        flag=true;
+                        ans++;
+                    }
+                    grid[temp.x_co][temp.y_co+1]=2;
+                    temp.y_co++;
+                    q.push(temp);
+                    temp.y_co--;
+                }
+                if(is_valid(temp.x_co,temp.y_co-1,ext_x,ext_y) && grid[temp.x_co][temp.y_co-1] == 1){
+                    if(!flag){
+                        flag=true;
+                        ans++;
+                    }
+                    grid[temp.x_co][temp.y_co-1]=2;
+                    temp.y_co--;
+                    q.push(temp);
+                }
+                q.pop();
+            }
+            q.pop();
+            
+            if(!q.empty()){
+                temp.x_co = -1;
+                temp.y_co = -1;
+                q.push(temp);
+            }
+        }
+        return is_all_rotten(grid) ? ans : -1;
+    }
+};
+
+int main(){
+  int n,m;
+  cin>>n>>m;
+  
+  vector<vector<int>> grid(n,vector<int>(m,-1));
+  
+  for(int it_x=0;it_x<ext_x;it_x++){
+      for(int it_y=0;it_y<ext_y;it_y++){
+          cin>>grid[it_x][it_y];  
+        }
+  }
+  
+  solution obj;
+  int ans = obj.oranges_rotting(grid);
+  
+  if(ans==-1){
+    cout<<"Not Possible to rot all oranges"<<endl;
+  } else {
+    cout<<"Time required to rot all oranges is : "<<ans<<endl;
+  }
+
+  return -1;
+}

@@ -1,0 +1,98 @@
+#include <iostream>
+#include<vector>
+using namespace std;
+
+// function to check if the placement of the queen is safe
+bool is_safe(int row, int col, vector<string> board, int n) {
+    int temp_row = row;
+    int temp_col = col;
+
+    // check for the diagonal elements
+    while(row >= 0 && col >= 0) {
+        if(board[row][col] == 'Q') {
+            return false;
+        } else {
+            row--;
+            col--;
+        }
+    }
+    row = temp_row;
+    col = temp_col;
+
+    // check for the column elements
+    while(col >= 0) {
+        if(board[row][col] == 'Q') {
+            return false;
+        } else {
+            col--;
+        }
+    }
+    col = temp_col;
+
+    // check for the antidiagonal elements
+    while(row < n && col >= 0) {
+        if(board[row][col] == 'Q') {
+            return false;
+        } else {
+            row++;
+            col--;
+        }
+    }
+    return true;
+}
+
+// function to solve the n-queens problem recursively
+void solve(int col, vector<string>& board, vector<vector<string>>& ans, int n) {
+    // if all queens are placed successfully, add the board configuration to the answer vector
+    if(col == n) {
+        ans.push_back(board);
+        return;
+    }
+
+    // place queens in the next column
+    for(int row = 0; row < n; row++) {
+        if(is_safe(row, col, board, n)) {
+            board[row][col] = 'Q';  // place the queen
+            solve(col+1, board, ans, n);  // recursively solve for the next column
+            board[row][col] = '.';  // backtrack and remove the queen
+        }
+    }
+}
+
+// main function to solve the n-queens problem
+vector<vector<string>> nQueen(int n) {
+    vector<vector<string>> ans;
+    vector<string> board(n);
+
+    string s(n, '.');  // create a string of '.' of length n
+
+    // initialize the board configuration with '.' for all squares
+    for(int i = 0; i < n; i++) {
+        board[i] = s;
+    }
+
+    // solve the n-queens problem recursively
+    solve(0, board, ans, n);
+
+    return ans;
+}
+
+int main() {
+    int num;
+    cin >> num;
+
+    vector<vector<string>> ans = nQueen(num);
+
+    // print the answer vector
+    for(auto itr : ans) {
+        for(auto it : itr) {
+            for(auto i : it) {
+                cout << i << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+    return 0;
+}

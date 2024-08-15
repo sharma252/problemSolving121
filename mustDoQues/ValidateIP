@@ -1,0 +1,62 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+bool validate_ipv4_address(string& ip_address) {
+    // Split the IP address string into four segments separated by periods.
+    vector<string> segments;
+    auto start = ip_address.begin();
+    for (auto it = ip_address.begin(); it != ip_address.end(); ++it) {
+        if (*it == '.') {
+            segments.push_back(string(start, it));
+            start = it + 1;
+        }
+    }
+    segments.push_back(string(start, ip_address.end()));
+
+    // Check that there are exactly four segments.
+    if (segments.size() != 4) {
+        return false;
+    }
+
+    // Validate each segment of the IP address.
+    for (auto& segment : segments) {
+        // Check that the segment is not empty or too long.
+        if (segment.empty() || segment.size() > 3) {
+            return false;
+        }
+
+        // Check that the segment consists only of digits.
+        for (auto& ch : segment) {
+            if (!isdigit(ch)) {
+                return false;
+            }
+        }
+
+        // Convert the segment to an integer and check that it is in the range 0-255.
+        int number = stoi(segment);
+        if (number < 0 || number > 255) {
+            return false;
+        }
+
+        // Check that the segment does not have leading zeros (except for the case of
+        // the segment being '0' itself).
+        if (segment.size() > 1 && segment[0] == '0') {
+            return false;
+        }
+    }
+
+    // If all segments pass the validation checks, then the IP address is valid.
+    return true;
+}
+
+
+int main(){
+    string str;
+    cin>>str;
+
+    cout<<validate_ipv4_address(str)<<endl;
+
+    return 0;
+}

@@ -1,0 +1,62 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+//Dp Solution:
+    long long optimal_keys_dp(int num){
+        vector<long long> dp(num+1,0);
+        for(int i=1;i<7;i++)
+            dp[i]=i;
+            
+        for(int i=7;i<=num;i++){
+            for(int j=i-3;j>=1;j--){
+                long long ans=(i-j-1)*dp[j];
+                dp[i]=max(ans,dp[i]);
+            }
+        }
+        return dp[num];
+    }
+    //Memoization solution:
+    long long optimal_keys_mem(int num,long long mem[]){
+        if(num<=6)
+            return num;
+            
+        if(mem[num]!=0)
+            return mem[num];
+            
+        int i=num-3;
+        while(i>=1){
+            mem[i] = max(mem[i],(num-i-1)*optimal_keys_mem(i,mem));    
+        }
+        return mem[i];
+    }
+    //Recursive solution:
+    long long optimal_keys_helper(int num,long long ans){
+        //for value less then six answer is six, no matter if we use ctrl-a,ctrl-c,ctrl-v
+        if(num<=6)
+            return num;
+            
+        //for every number try fron num-3 as 3 operation are required for copy-paste.
+        int i=num-3;
+        while(i>=1){
+            ans = max(ans,(num-i-1)*optimal_keys_helper(i,ans));    
+        }
+        //return ans.
+        return ans;
+    }
+    
+long long optimal_keys(int num){
+  if(num<=6)
+    return num;
+    
+  long long ans = optimal_keys_dp(num);
+  return ans;
+}
+
+int main(){
+  int num;
+  cin>>num;
+  
+  cout<<optimal_keys(num)<<endl;
+  
+  return 0;
+}

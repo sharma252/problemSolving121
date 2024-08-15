@@ -1,0 +1,91 @@
+/*
+  In this question when we solve it on pen and paper we are multiplying the depth with freq.
+  But we are not doing any such kind of thing in formula bcz see, if we consider one node 
+  as root then we are adding the freq. of child node two time, for example:
+  nodes[] = {10,12};
+  freq[]  = {34,50};
+  if we take optimal case only in which root is 12, then we are doing frequency Sum(50 + 34) + 
+  34 which is equivalent to 34*2. Hence formula is valid.
+  */
+
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int freqSum(int arr[],int start,int end){
+  int sum=0;
+  F(i,start,end+1)
+    sum+=arr[i];
+  return sum;
+}
+
+int optBSTHelper(int freq[],int start,int end){
+  //If start is greater then end that means we reach the end.
+  if(start>end)
+    return 0;
+
+  //If both are equal return anyone's frequency.
+  if(start==end)
+    return freq[start];
+
+  int minCost = INT_MAX,curCost;
+  int fSum = freqSum(freq,start,end); 
+
+  for(int rootNode = start;rootNode<=end;rootNode++){
+    //See one is before root and other is after it.
+    curCost = optBSTHelper(freq,start,rootNode-1) + optBSTHelper(freq,rootNode+1,end);
+    minCost = min(minCost,curCost);
+  }
+  //finally we return minimum cost with total frequency. 
+  return minCost + fSum;
+}
+
+//Recursive approach:
+int optBST(int nodes[],int freq[],int n){
+  /*
+  we actually don't need nodes value for our calcualtion as you can see 
+  it totally depends upon frequency search of that node and depth of it.
+  Therefore we divide it in two parts, one is before the root and the other
+  one is after the root and we add total frequency till current node in it.
+  */
+  return optBSTHelper(freq,0,n-1);
+}
+
+//DP approach:
+int optBSTDP(int nodes[],int freq[],int n){
+  int cost[n][n];
+
+  for(int i=0;i<n;i++)
+    cost[i][i]=freq[i];
+
+  for(int len=2;len<=n;len++){
+    int curCost;
+    for(int i=0;i<=n-len+1;i++){
+      int j = i+len-1;
+      cost[i][j]=INT_MAX;
+      for(int rootNode = i; rootNode<=j;rootNode++){
+        curCost = (rootNode>i ? cost[i][rootNode-1] : 0) + (rootNode<j ? cost[rootNode+1][j] : 0) + freqSum(freq,i,j);
+        cost[i][j] = min(cost[i][j],curCost);
+      }
+    }
+  }
+  return cost[0][n-1];
+}
+
+int main(){
+  int n;
+  cin>>n;
+
+  int nodes[n];
+  int freq[n];
+
+  F(i,0,n){
+    cin>>nodes[i];
+    cin>>freq[i];
+  }
+
+  cout<<optBST(nodes,freq,n)<<endl;
+  cout<<optBSTDP(nodes,freq,n)<<endl;
+
+  return 0;
+}

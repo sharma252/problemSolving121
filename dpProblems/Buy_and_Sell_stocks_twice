@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Returns maximum profit with two transactions on a given list of stock prices, price[0..n-1]
+int maxProfit(int price[], int n){
+	int n = price.size();
+    vector<int> profit(n,0);
+    
+    //First traverse the array forward and find the profit at every index
+    // and store it in profit array.
+    int minPrice = price[0];
+    for(int i=1;i<n;i++){
+        minPrice = min(minPrice,price[i]);
+        profit[i] = max(profit[i-1],price[i]-minPrice);
+    }
+    
+    /*
+    Traversing backward is little different as we do opposite of above approach.
+    find maxPrice and subtract it from current price and find maxProfit.
+    maxProfit is calculated as profit of the second transaction profit[i-1]
+    bcz we can only consider the current transaction if previous stock is already sold.
+    */
+    int maxPrice = price[n-1];
+    int maxProfit = 0;
+    for(int i=n-2;i>0;i--){
+        maxPrice = max(maxPrice,price[i]);
+        maxProfit = max(maxProfit, (maxPrice-price[i]) + profit[i-1]);
+    }
+    return maxProfit;
+}
+
+
+int main(){
+	int n;
+	cin>>n;
+
+	vector<int> price(n);
+
+	for(int i=0;i<n;i++)
+		cin>>price[i];
+
+	cout << "Maximum Profit = " << maxProfit(price, n);
+	return 0;
+}

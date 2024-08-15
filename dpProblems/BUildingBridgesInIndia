@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+bool compare(pair <int,int> x,pair <int,int> y){
+  //See we used a check here if two points are equal then we are sorting on the bases of 
+  //north co-ordinates so that ans should be maximised(how's that possible bcz if two co-ordinates become equal
+  //we use north so that they won't overlap and ans should be maximised).
+  return x.first==y.first ? x.second<y.second : x.first<y.first;      //first = South && second = North
+}
+
+int maxBridges(int southCity[],int northCity[],int n){
+  vector <pair <int,int>> cities;
+
+  F(i,0,n)
+    cities.push_back({southCity[i],northCity[i]});
+
+  int dp[n+1];
+  int maxBridge=-1;
+  sort(cities.begin(),cities.end(),compare);
+
+  for(int i=0;i<n;i++)
+      dp[i]=1;
+
+  //IF we do sorting on basis of north then LIS is found on the bases of South and vice versa.
+  for(int i=1;i<n;i++){
+    for(int j=0;j<i;j++){
+      if(dp[i]<dp[j]+1 && cities[i].second>=cities[j].second){
+        dp[i]=dp[j]+1;
+        maxBridge = max(dp[i],maxBridge);
+        }
+    }
+  }
+  return maxBridge;
+}
+
+int main(){
+  int n,m;
+  cin>>n;
+
+  int southCity[n], northCity[n];
+  F(i,0,n)
+    cin>>southCity[i];
+
+  F(i,0,n)
+    cin>>northCity[i];
+
+  cout<<maxBridges(southCity,northCity,n)<<endl;
+
+  return 0;
+}

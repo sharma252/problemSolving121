@@ -1,0 +1,85 @@
+//Top Quality Question:
+ #include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+class box{
+    public:
+    int height;
+    int width;
+    int depth;
+};
+
+//Pointer to a function that compare two elements, its syntax is somewhat difficult.
+int compare(const void* first,const void* second){
+    //Lets see we return second at First position if its area(depth*height) is greater then first pointer.
+    return ( ((*(box*)second).depth) * ((*(box*)second).width) - ((*(box*)first).depth) * ((*(box*)first).width) );
+}
+
+//Dp Approach:
+int maxHeightStack(vector <vector<int>> arr,int n){
+    box inst[3*n];      //Array of objects for all instance of box.
+    int idx=0;
+
+    F(i,0,n){       //All three cases considered here :
+        inst[idx].height = arr[i][0];
+        inst[idx].depth = max(arr[i][1],arr[i][2]);   //We will be taking max in one and min in other so that comparision in main code become smooth otherwise we get wrong ans.
+        inst[idx].width = min(arr[i][1],arr[i][2]);
+        idx++;
+
+        inst[idx].height = arr[i][1];
+        inst[idx].depth = max(arr[i][0],arr[i][2]);
+        inst[idx].width = min(arr[i][0],arr[i][2]);
+        idx++;
+
+        inst[idx].height = arr[i][2];
+        inst[idx].depth = max(arr[i][1],arr[i][0]);
+        inst[idx].width = min(arr[i][1],arr[i][0]);
+        idx++;
+    }
+
+    n=3*n;      //New size become 3*n.
+    //We used QuickSort here bcz we are trying to get area sorted as dataType is our own class member.
+    qsort(inst,n,sizeof(inst[0]),compare);      //Sorting based on decreasing base area.
+
+    int dp[n];
+    int maxHeight=-1;
+
+    F(i,0,n){
+        dp[i] = inst[i].height; //Initially dp[i] contain height of that particular box at i.
+    }
+
+    //Now this problem is same as longest increasing subsequence.
+    for(int i=1;i<n;i++){
+        //See j is iterating from 0 to i only.
+        for(int j=0;j<i;j++){
+            /*Main formula is present in below if condition:
+              The value of DP[i] will change only if width and depth at Jth index(j is always less then i)
+              is greater then depth and width and height at i and we get larger answer by adding 
+              height of ith index in DP[j].
+            */
+            if(inst[i].width<inst[j].width && inst[i].depth<inst[j].depth && dp[i]<dp[j]+inst[i].height){
+                dp[i] = dp[j]+inst[i].height;
+                maxHeight = max(maxHeight,dp[i]);
+            }
+        }
+    }
+    return maxHeight;
+}
+
+int main(){
+    int n;
+    cin>>n;
+
+    vector <vector <int>> arr(n, vector<int> (3));
+
+    F(i,0,n){
+        for(int j=0;j<3;j++)
+            cin>>arr[i][j];
+    }
+
+    cout<<maxHeightStack(arr,n)<<endl;
+
+
+  return 0;
+}

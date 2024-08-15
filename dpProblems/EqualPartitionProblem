@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+// Somewhat similar to Subset sum problem just half of the actual sum.
+
+int isPossible(int arr[],int n,int k,int sum){
+  if(sum==k/2)
+    return 1;
+
+  if(n==0)
+    return 0;
+
+  return (isPossible(arr,n-1,k,sum+arr[n])|| isPossible(arr,n-1,k,sum));
+}
+
+int isPossible(int arr[],int n,int k){
+  int dp[n+1][k/2+1];
+
+  for(int i=0;i<n;i++)
+    dp[i][0]=1;
+  for(int i=0;i<=k/2;i++)
+    dp[0][i]=0;
+
+  dp[0][0]=1;
+
+  for(int i=1;i<=n;i++)
+    for(int j=1;j<=(k/2);j++){
+      if(arr[i-1]<=j)
+      dp[i][j] = dp[i-1][j] || dp[i-1][j-arr[i-1]];
+      else
+        dp[i][j] = dp[i-1][j];
+    }
+
+  return dp[n][k/2];
+}
+
+int main(){
+  int n,k=0;
+  cin>>n;
+
+  int arr[n];
+
+  //2 3 4 5 6, Sum = 20, find if a subset whose sum = 10, exist in our array ?
+  F(i,0,n){
+    cin>>arr[i];
+    k+=arr[i];
+  }
+
+  int sum=0;
+  cout<<isPossible(arr,n-1,k,sum)<<endl;
+  cout<<isPossible(arr,n,k)<<endl;
+  return 0;
+}

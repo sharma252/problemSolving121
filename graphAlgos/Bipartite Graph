@@ -1,0 +1,69 @@
+//Good Concept.
+
+#include<bits/stc++.h>
+using namespace std;
+
+bool isBipartite(vector <int> adj[],int n){
+//Take a vector of size V and initialize it with zero.
+
+vector <int> visited (V,0); 
+   
+    for(int i=0;i<V;i++){
+     //If vertex is already visited then skip the iteration.
+
+      if(visited[i])
+      continue;
+
+     //Otherwise push the element in queue.
+
+     queue <int> q1;
+     q1.push(i);
+
+     while(!q1.empty()){
+      int cur = q1.front();
+      q1.pop();
+
+      for(auto it : adj[cur]){
+
+        //If the vertex has not assigned any value:
+
+        //First check what value is assigned to its neighbor node and
+
+        //Assign alternate value to it. 
+       if(visited[it]==0){
+        visited[it] = visited[cur] == 1 ? 2 : 1;
+        q1.push(it);
+       }
+
+        //Otherwise if some value is already assigned to current vertex and
+
+       //It matches to neighbour value return false as the graph is not bipartite.
+       else if(visited[cur]==visited[it])
+        return false;
+      }
+
+     }
+
+    }
+
+  //If all traversal runs smoothly that means graph is bipartite.
+    return true;
+}
+
+int main(){
+  int n,e;
+  cin>>n>>e;
+  
+  vector <int> adj[n];
+  
+  for(int i=0;i<n;i++){
+    int s,d;
+    cin>>s>>d;
+    adj[s].push_back(d);
+    adj[d].push_back(s);
+  }
+  
+  cout<<isBipartite(adj,n);
+  
+}
+    

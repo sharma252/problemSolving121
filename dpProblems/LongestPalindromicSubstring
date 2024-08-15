@@ -1,0 +1,71 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//Brute force approach:
+int palindromeSubString(string str){
+    int n = str.size();
+    int maxL=1;
+    for(int i=0;i<n;i++){
+        for(int j=i;j<n;j++){
+            bool flag=true;
+            for(int k=0;k<(j-i+1)/2;k++){   //we using j-i+1 as it is telling us about the size of substring and we are adding 1 in it
+            //so that total remians accurate ex.: 5-2=3 but 2,3,4,5 is 4.
+                if(str[k+i]!=str[j-k]){
+                    flag=false;
+                    break;
+                }
+            }
+            if(flag && (j-i+1)>maxL)
+                maxL=j-i+1;
+        }
+    }
+    return maxL;
+}
+
+//DP approach:
+string palindromeSubStringDP(string str){
+    int n = str.size();
+    int maxL=1,start=0;
+    bool dp[n+1][n+1]; //Both the parameters are string itself as we will compare elements at every index.
+
+    memset(dp,0,sizeof(dp));
+
+    //Diagonal Elements are already palindromic.
+    for(int i=0;i<n;i++)
+        dp[i][i]=true;
+
+    //Check for exact afterward element as we will be calc. i+1 && j-1 in our final traversal.
+    for(int i=0;i<n-1;i++){
+        if(str[i]==str[i+1]){
+            dp[i][i+1]=true;
+            start=i;
+            maxL=2;    
+        }
+    }
+
+    for(int i=3;i<=n;i++){
+        int endIdx;
+        for(int j=0;j<n-i+1;j++){
+            endIdx = j+i-1;         //EndIdx changes every time.
+            if(dp[j+1][endIdx-1] && str[j]==str[endIdx]){
+                dp[j][endIdx] = true;
+                start=j;
+                maxL = max(maxL,i);   
+            }
+        }    
+    }
+    return str.substr(start,maxL);
+}
+
+int main(){
+    string str;
+
+    cin>>str;
+
+    cout<<palindromeSubString(str)<<endl;
+    cout<<palindromeSubStringDP(str)<<endl;
+
+
+  return 0;
+}

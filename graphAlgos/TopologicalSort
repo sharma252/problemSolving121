@@ -1,0 +1,55 @@
+//Topological Sort: A little variation of Cycle detection in directed graph.
+//Here we are using the stack to print elements in that order where
+//in cycle detection we use stack to identify cycle.
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+void addEdge(vector<int> adj[],int s,int e){
+  adj[s].push_back(e);
+}
+
+//Modofied DFS function for prefered requirements:
+//See the catch in this problem is we need the vertices to printed only after all of its adjacent vertices must be printed first.
+//For this we use stack in which we push elements only after visiting all of its adjacent vertices.
+void dfs(vector<int> adj[],vector<bool> &visit, stack<int> &s1,int cur){
+  visit[cur]=true;
+  
+  for(auto it:adj[cur]){
+    if(!visit[it])
+      dfs(adj,visit,s1,it);
+  }
+    s1.push(cur);
+}
+
+void topologicalSort(vector<int> adj[],int n){
+  vector<bool> visit(n,false);
+  stack<int> s1;
+
+  for(int i=0;i<n;i++){
+    if(!visit[i])
+        dfs(adj,visit,s1,i);
+  }
+
+  while(!s1.empty()){
+    cout<<s1.top()<<" ";
+    s1.pop();
+  }
+
+}
+
+int main(){
+  int n;
+  cin>>n;
+  vector<int> adj[n];
+
+  for(int i=0;i<n;i++){
+    int strt,end;
+    cin>>strt>>end;
+    addEdge(adj,strt,end);
+  }
+
+  topologicalSort(adj,n);
+
+  return 0;
+}

@@ -1,0 +1,39 @@
+//Similar to fibonacci number.
+
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int optimalTiling(int n){
+  //if n==1 then only one way to tile 2x1 tile on 2x1 floor 
+  //if n==2 then set both tile horizontally and vertically i.e. 2 ways.
+  if(n<=2)
+    return n;
+  
+  //Otherwise for vertical n-1 and for horizontal n-2 ways.
+  return optimalTiling(n-1) + optimalTiling(n-2);
+}
+
+int optimalTilingDP(int n){
+  if(n<=2)
+    return n;
+
+  int dp[n+1];
+  dp[0]=0,dp[1] = 1,dp[2] = 2;
+
+  F(i,3,n+1){
+    dp[i] = dp[i-1] + dp[i-2]; 
+  }
+  return dp[n];
+}
+
+int main(){
+  int n;
+  //n cannot be less then 1.
+  cin>>n;
+
+  cout<<optimalTiling(n)<<endl;
+  cout<<optimalTilingDP(n)<<endl;
+
+  return 0;
+}

@@ -1,0 +1,147 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+
+//The BFS called by BFS for disconnected graph.
+void BFS(int ** edges,int n,int sv,bool * visited){
+
+    queue <int> q1;
+    q1.push(sv);
+    visited[sv] = true;
+
+    while(!q1.empty()){
+        int cur = q1.front();
+        q1.pop();
+        cout<<cur<<" ";
+        for(int i=0;i<n;i++){
+            if(i==cur)
+                continue;
+            if(edges[i][cur]==1 && visited[i]==false){
+                q1.push(i);
+                visited[i] = true;
+            }
+
+        }
+    }
+    
+}
+
+//BFS function used for breadth first search of connected graph.
+void BFS(int ** edges,int n,int sv){
+
+    bool * visited = new bool[n];
+    for(int i=0;i<n;i++)
+        visited[i]=false;
+
+    queue <int> q1;
+    q1.push(sv);
+    visited[sv] = true;
+
+    while(!q1.empty()){
+        int cur = q1.front();
+        q1.pop();
+        cout<<cur<<" ";
+        for(int i=0;i<n;i++){
+            if(i==cur)
+                continue;
+            if(edges[i][cur]==1 && visited[i]==false){
+                q1.push(i);
+                visited[i] = true;
+            }
+
+        }
+    }
+    delete [] visited;
+}
+
+//DFS function for depth first traversal, which can be used for connected as well as disconnected graph.
+void DFS(int ** edges,int n,int sv,bool * visited){
+    cout<<sv<<" ";
+    visited[sv] = true;
+
+    for(int i=0;i<n;i++){
+            if(sv==i)
+                continue;
+
+        if(edges[sv][i]==true){
+            if(visited[i]==true)
+                continue;
+            DFS(edges,n,i,visited);
+        }
+
+    }
+}
+
+//DFS function used for disconnected graph.
+void DFS(int** edges,int n){
+    bool * visited = new bool[n];
+
+    for(int i=0;i<n;i++)
+        visited[i]=false;
+
+    for(int i=0;i<n;i++){
+        if(visited[i]==false)
+            DFS(edges,n,i,visited);
+    }
+
+    delete [] visited;
+}
+
+//BFS function used for disconnected graph.
+void BFS(int **edges, int n){
+    bool * visited = new bool[n];
+
+    for(int i=0;i<n;i++)
+        visited[i]=false;
+
+    for(int i=0;i<n;i++){
+        if(visited[i]==false)
+            BFS(edges,n,i,visited);
+    }
+
+    delete [] visited;
+}
+
+int main(){
+    int n,edge;
+    cin>>n>>edge;
+
+    int ** edges = new int*[n];
+
+    for(int i=0;i<n;i++){
+        edges[i] = new int[n];
+        for(int j=0;j<n;j++)
+            edges[i][j]=0;
+    }
+
+    bool * visited = new bool[n];
+
+    for(int i=0;i<n;i++)
+        visited[i]=false;
+
+    for(int i=0;i<edge;i++){
+            int sv,ev;
+            cin>>sv>>ev;
+            edges[sv][ev]=1;
+            edges[ev][sv]=1;
+    }
+
+    cout<<"DFS for connected: "<<endl;
+    DFS(edges,n,0,visited);
+
+    cout<<"\nBFS for connected: "<<endl;
+    BFS(edges,n,0);
+
+    cout<<"\nDFS for Disconnected: "<<endl;
+    DFS(edges,n);
+
+    cout<<"\nBFS for Disconnected: "<<endl;
+    BFS(edges,n);
+
+    delete [] visited;
+    for(int i=0;i<n;i++){
+        delete [] edges[i];
+    }
+
+    delete [] edges;
+}

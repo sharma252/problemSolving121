@@ -1,0 +1,55 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+bool cycleDetector(vector <int> adj[],vector <bool> &visited,vector <bool> &Stack,int cur){
+  //First mark the current vertex as visited && push it in stack.
+  Stack[cur]=true;
+  visited[cur]=true;
+
+  //Traverse all neighbour vertices of cur vertex and if we found a vertex in our stack then we return true.
+  for(auto it:adj[cur]){
+    if(!visited[it] && cycleDetector(adj,visited,Stack,it))
+      return true;
+      //The actual work is done by this condition only.
+    else if(Stack[it])
+      return true;
+  }
+  /*
+  If no cycle is found mark the cur vertex as unvisited in our stack.
+  we are doing so bcz we are passing both the visited and recStack as refernece 
+  our code will work for most of the cases if we pass them by value and skip that below one step.
+  */
+  Stack[cur]=false;
+  return false;
+}
+
+int cycleInAGraph(vector<int> edges[],int n){
+  vector <bool> visited(n,false);
+  vector <bool> Stack(n,false);
+
+  for(int i=0;i,n;i++){
+    //Traverse for every vertex.
+    if(!visited[i] && cycleDetector(edges,visited,Stack,i))
+      return true;
+    }
+    
+  return false;
+}
+
+int main(){
+  int n;
+  cin>>n;
+
+  vector<int> edges[n];
+
+  for(int i=0;i<n;i++){
+    int src,dest;
+    cin>>src>>dest;
+    edges[src].push_back(dest);
+  }
+
+  cout<<cycleInAGraph(edges,n)<<endl;
+
+  return 0;
+}

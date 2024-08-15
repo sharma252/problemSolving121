@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)        // 3 2 7 10
+
+
+int maxSumDp(int arr[],int n){
+    int dp[n+1];
+
+    //The first element of our ans depends on the first element of array so we assign 0 or array first element accordingly.
+    arr[0]>0 ? dp[0] = arr[0] : dp[0] = 0;
+
+    //Ans second element is selected as th emax of first two of array.
+    dp[1] = max(arr[0],arr[1]);
+
+    F(i,2,n){
+        //For every element check that if adding current element make our answer greater than prev dp array element.
+        //If so add it otherwise keep it same.
+        dp[i] = max(arr[i] + dp[i-2],dp[i-1]); 
+    }
+
+    return dp[n-1];
+}
+
+int maxSumHelper(int arr[],int n, int sum){
+    //If we reach at the end of the array then we have to return the sum.
+    if(n<=0)
+       return sum;
+    
+    //For every element of the array we check if adding that element return max answer or leaving it and choosing the next one.
+   return max(maxSumHelper(arr+2,n-2,sum+arr[0]),maxSumHelper(arr+1,n-1,sum));
+}
+
+int maxSumR(int arr[],int n){
+    int sum=0;
+    return maxSumHelper(arr,n,sum);
+}
+
+int main(){
+    int n;
+    cin>>n;
+
+    int arr[n];
+
+    F(i,0,n)
+        cin>>arr[i];
+
+    cout<<maxSumR(arr,n)<<endl;
+    cout<<maxSumDp(arr,n)<<endl;
+
+  return 0;
+}

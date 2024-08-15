@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+  
+  vector <int> max_element_subarray(vector<int> arr,int n){
+    deque <int> dq;
+    vector <int> ans;
+    
+    for(int i=0;i<k;i++){
+      //Remove all the elements less then current element
+      //from deque back.
+        while(!dq.empty() && arr[i]>=arr[dq.back()]){
+            dq.pop_back();
+        }
+        //Store the index of element in the deque.
+        dq.push_back(i);
+    }
+    
+    for(int i=k;i<n;i++){
+      //For every element push the front element to ans.
+        ans.push_back(arr[dq.front()]);
+        //Adjust the sliding window.
+        while(!dq.empty() && dq.front()<=i-k)
+            dq.pop_front();
+        
+        //Remove all the elements less then current element
+        //from deque back.
+        while(!dq.empty() && arr[i]>=arr[dq.back()]){
+            dq.pop_back();
+        }
+        dq.push_back(i);
+    }
+    //Push the last element into the ans.
+    ans.push_back(arr[dq.front()]);
+    
+    return ans;
+  }
+  
+  int main(){
+    int n;
+    cin>>n;
+    
+    vector<int> arr(n);
+    
+    for(int i=0;i<n;i++)
+      cin>>arr[i];
+      
+    vector<int> ans = max_element_subarray(arr,n);
+      
+    for(auto it : ans)
+      cout<<it<<" ";
+  
+    return 0;
+  }

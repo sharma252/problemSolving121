@@ -1,0 +1,60 @@
+//Easy Question.
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int editDistanceDP(string s1,string s2){
+  int n = s1.length();
+  int m = s2.length();
+
+  if(n==0)
+    return m;
+  if(m==0)
+    return n;
+
+  int dp[n+1][m+1];
+
+  for(int i=0;i<=n;i++){
+    for(int j=0;j<=m;j++){
+      if(i==0)
+        dp[i][j]=j;
+      else if(j==0)
+        dp[i][j]=i;
+      else if(s1[i-1]==s2[j-1])
+        dp[i][j] = dp[i-1][j-1];
+      else
+        dp[i][j] = 1 + min(dp[i-1][j],min(dp[i][j-1],dp[i-1][j-1]) );
+    }
+  }
+  return dp[n][m];
+
+}
+
+int editDistances(string s1,string s2){
+  int n = s1.length();
+  int m = s2.length();
+
+  //If any of the string is empty return the size of other string.
+  if(n==0)
+    return m;
+  if(m==0)
+    return n;
+  
+  //If any of the character matched just return both string with one size less.
+  if(s1[n-1] == s2[m-1])
+    return editDistances(s1.substr(0,n-1),s2.substr(0,m-1));
+
+  //Otherwise return minimum of all three operation insert, replace, delete.
+  return 1+ min(editDistances(s1.substr(0,n-1),s2),min(editDistances(s1,s2.substr(0,m-1)),editDistances(s1.substr(0,n-1),s2.substr(0,m-1))) );
+
+}
+
+int main(){
+  string s1,s2;
+  cin>>s1>>s2;
+
+  cout<<editDistances(s1,s2)<<endl;
+  cout<<editDistanceDP(s1,s2)<<endl;
+
+  return 0;
+}

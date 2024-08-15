@@ -1,0 +1,96 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int maxLCSDP(char s1[],int n,char s2[],int m){
+    int dp[n+1][m+1];
+
+    F(i,0,n+1){
+        F(j,0,m+1)
+            dp[i][j]=0;
+    }
+
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            if(s1[i-1]==s2[j-1])
+                dp[i][j] = 1 + dp[i-1][j-1];
+            else
+                dp[i][j] = max(dp[i-1][j],dp[i][j-1]); 
+        }
+    }
+    return dp[n][m];
+}
+
+int maxLCSHelperMem(char s1[],int n,int p1,char s2[],int m,int p2,int **mem){
+    if(p1==n || p2==m)
+        return 0;
+
+    if(mem[p1][p2]!=0)
+        return mem[p1][p2];
+
+    if(s1[p1] == s2[p2])
+        return mem[p1][p2] = 1 + maxLCSHelperMem(s1,n,p1+1,s2,m,p2+1,mem);
+
+    return mem[p1][p2] = max(maxLCSHelperMem(s1,n,p1+1,s2,m,p2,mem),maxLCSHelperMem(s1,n,p1,s2,m,p2+1,mem));
+}
+
+int maxLCSMem(char s1[],int n,char s2[],int m){
+    if(n==0 || m==0)
+        return 0;
+
+    int p1=0,p2=0;
+
+    int **mem = new int*[n];
+
+    F(i,0,n){
+        mem[i] = new int[m];
+        F(j,0,m)
+            mem[i][j]=0;
+    }
+
+    return maxLCSHelperMem(s1,n,p1,s2,m,p2,mem);
+}
+
+int maxLCSHelper(char s1[],int n,int p1,char s2[],int m,int p2){
+    //If any of the pointer reaches to end of the string return 0.
+    if(p1==n || p2==m)
+        return 0;
+
+    //If character at current pointer matches return the function plus one at the next diagonal position. 
+    if(s1[p1] == s2[p2])
+        return 1 + maxLCSHelper(s1,n,p1+1,s2,m,p2+1);
+
+    //If character doesn't match call helper function at right index and bottom index and take max of it as answer.
+    return max(maxLCSHelper(s1,n,p1+1,s2,m,p2),maxLCSHelper(s1,n,p1,s2,m,p2+1));
+}
+
+int maxLCS(char s1[],int n,char s2[],int m){
+    //If either of the string is zero return ans as zero.
+    if(n==0 || m==0)
+        return 0;
+
+    //Take two pointer p1 and p2 that point to string s1,s2 rpy.
+    int p1=0,p2=0;
+
+    //Make a helper function which take argument as of your requirements and call it.
+    return maxLCSHelper(s1,n,p1,s2,m,p2);
+}
+
+int main(){
+    int n,m;
+    cin>>n>>m;
+
+    char s1[n],s2[m];
+
+    F(i,0,n)
+        cin>>s1[i];
+
+    F(i,0,m)
+        cin>>s2[i];
+
+    cout<<"Recursive Ans : "<<maxLCS(s1,n,s2,m)<<endl;
+    cout<<"Memoization Ans : "<<maxLCSMem(s1,n,s2,m)<<endl;
+    cout<<"DP Ans : "<<maxLCSDP(s1,n,s2,m)<<endl;
+ 
+    return 0;
+}

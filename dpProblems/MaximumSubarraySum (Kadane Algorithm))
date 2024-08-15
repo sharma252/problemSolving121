@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//We are taking this global varibale for recursive solution
+int maxSum=INT_MIN;       //-2 11 -4 13 -5 2
+
+int maxSubSumDP(int arr[],int n){
+    //Take two varaible one to calculate max till current element and other for max overall.
+    int maxSoFar=INT_MIN,maxEndingHere=0;
+
+    F(i,0,n){
+        //add every element to max till now
+        maxEndingHere+=arr[i];
+        //Update maxSoFar as necessary.
+        maxSoFar = max(maxSoFar,maxEndingHere);
+
+        //If max till current element is negative make it zero as we get max sum through positive segment only.
+        if(maxEndingHere<0)
+            maxEndingHere=0;
+
+    }
+    return maxSoFar;
+
+}
+
+void maxSubHelper(int arr[],int n, int sum){
+    if (n==0)
+        return ;
+
+    sum += arr[0];
+    maxSum = max(maxSum,sum);
+    
+    sum = sum<0 ? 0 : sum;
+    maxSubHelper(arr+1,n-1,sum);
+}
+
+void maxSubSum(int arr[],int n){
+    int sum=0;
+    maxSubHelper(arr,n,sum);
+}
+
+int main(){
+    int n;
+    cin>>n;
+
+    int arr[n];
+
+    for(int i=0;i<n;i++)
+        cin>>arr[i];
+
+    maxSubSum(arr,n);
+
+    cout<<"Rec ans: "<<maxSum<<endl;
+    cout<<"DP Solution: "<<maxSubSumDP(arr,n)<<endl;
+
+    return 0;
+}

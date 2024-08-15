@@ -1,0 +1,47 @@
+
+vector<int> spirallyTraverse(vector<vector<int> > matrix){
+  int row = matrix.size();
+  int col = matrix[0].size();
+  vector<int> ans;
+  int dir=0;
+  int top=0,bottom=row-1;
+  int left=0,right=col-1;
+  
+  while(top<=bottom && left<=right){
+      /*
+        1.) First we start to traverse is from left to right
+            where top pointer stays the same i.e. row.
+        2.) Then we need to traverse from top to bottom
+            where right stays the same i.e. col.
+        3.) Then we need to traverse from right to left
+            where bottom stays the same i.e. row.
+        4.) Then we need to traverse from bottom to top
+            where left stays the same i.e. col.
+      */
+      if(dir==0){
+          for(int itr=left;itr<=right;itr++){
+              ans.push_back(matrix[top][itr]);
+          }
+          top++;
+      } else if(dir==1){
+          for(int itr=top;itr<=bottom;itr++){
+              ans.push_back(matrix[itr][right]);
+          }
+          right--;
+      } else if(dir==2){
+          for(int itr=right;itr>=left;itr--){
+              ans.push_back(matrix[bottom][itr]);
+          }
+          bottom--;
+      } else if(dir==3){
+          for(int itr=bottom;itr>=top;itr--){
+              ans.push_back(matrix[itr][left]);
+          }
+          left++;
+      }
+      //Here dir+1 to change the direction of traversal
+      //Mod for so that it stays inside 0 to 3.
+      dir = (dir+1)% 4;
+  }
+  return ans;
+}

@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int RabinKarp(string text, string pattern) {
+    int txtSize = text.size();
+    int patSize = pattern.size();
+    int maxCharVal = 256;  
+    int modVal = INT_MAX; 
+    int patternHash = 0;
+    int textHash = 0;
+    int preComputed=1;
+    
+    //This precomputed value help in rolling hash calculation 
+    //to efficiently update the hash value of a substring
+	for (int i = 0; i < patSize-1; i++) {
+	    preComputed = (preComputed * maxCharVal) % modVal;
+	}
+    
+    // calculate the hash value of the pattern and the first substring of the text
+    for (int i = 0; i < patSize; i++) {
+        patternHash = (patternHash * maxCharVal + pattern[i]) % modVal;
+        textHash = (textHash * maxCharVal + text[i]) % modVal;
+    }
+    
+    // compare the hash values and the characters of the pattern and the substring
+    for (int i = 0; i <= txtSize-patSize; i++) {
+        if (patternHash == textHash) {
+            if (pattern == text.substr(i, patSize)) {
+                return i+1;  // match found
+            }
+        }
+        // calculate the hash value of the next substring of the text
+        if (i < txtSize-patSize) {
+            int prevVal = (textHash - text[i]) * preComputed;
+            textHash = (maxCharVal * (prevVal + text[i+patSize])) % modVal;
+            if (textHash < 0) {
+                textHash += modVal;
+            }
+        }
+    }
+    return -1;  // no match found
+}
+
+int main() {
+    string text = "ABABDABACDABABCABAB";
+    string pattern = "ABABCABAB";
+    int index = RabinKarp(text, pattern);
+    if (index == -1) {
+        cout << "No match found" << endl;
+    } else {
+        cout << "Match found at index " << index << endl;
+    }
+    return 0;
+}

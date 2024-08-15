@@ -1,0 +1,60 @@
+//Quality Question:
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+vector<int> maxSlidingWindow(vector<int> nums,int k){
+    //Heap that will store max element and its index.
+    priority_queue<pair<int,int>> pq;
+    vector<int> ans;
+
+    for(int i=0;i<nums.size();i++){
+        //this loop make sure we always have the highest element at top 
+        //that is lying in the sliding window.
+        while(!pq.empty() && pq.top().second<=i-k)
+            pq.pop();
+        pq.push({nums[i],i});
+        //If we have a valid window i.e. size greater then equal k
+        //then we push the max in ans.
+        if(i>=k-1)
+            ans.push_back(pq.top().first);
+    }
+    return ans;
+
+    /*
+    deque<pair<int,int>> dq;
+        vector<int> ans;
+        
+        for(int i=0;i<nums.size();i++){
+            
+            while(!dq.empty() && dq.front().second<=i-k)
+                dq.pop_front();
+            
+            //Only one extra thing we need to do in doubly ended queue is Maintain max at top:
+            while(!dq.empty() && dq.back().first<nums[i])
+                dq.pop_back();
+            
+            dq.push_back({nums[i],i});
+            
+            if(i>=k-1)
+                ans.push_back(dq.front().first);
+            
+        }
+        return ans;
+    */
+
+}
+
+int main(){
+    int n,k;
+    cin>>n>>k;
+
+    vector<int> nums(n);
+
+    F(i,0,n)
+      cin>>nums[i];
+
+    vector<int> ans = maxSlidingWindow(nums,k);
+
+    return 0;
+}

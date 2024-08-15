@@ -1,0 +1,80 @@
+//Good Question, Require prior knowledge of largestAreaInAHistogram.
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for(int i=L;i<R;i++)
+
+int largestAreaInAHistogram(vector <int>arr){
+	int n = arr.size();
+        int left[n];
+        int right[n];
+        int maxArea=0;
+    
+        stack <int> s1;
+        F(i,0,n){
+            if(s1.empty()){
+                s1.push(i);
+                left[i]=0;
+            }else{
+                while(!s1.empty() && arr[s1.top()]>=arr[i])
+                    s1.pop();
+                s1.empty()?left[i]=0:left[i]=s1.top()+1;
+                s1.push(i);
+            }
+        }
+    
+        while(!s1.empty())
+            s1.pop();
+    
+        for(int i=n-1;i>=0;i--){
+            if(s1.empty()){
+                s1.push(i);
+                right[i]=n-1;
+            }
+            else{
+                while(!s1.empty() && arr[s1.top()]>=arr[i])
+                    s1.pop();
+                s1.empty()?right[i]=n-1:right[i]=s1.top()-1;
+                s1.push(i);
+            }
+        }
+    
+        F(i,0,n){
+            //Area = (right - left + 1) * height 
+            maxArea = max(maxArea,(right[i] - left[i] + 1)*arr[i]);
+        }
+        return maxArea;
+}
+
+int largestSubMatrix(vector <vector <int> > matrix){
+	int n = matrix.size();
+	int m = matrix[0].size();
+	
+	int maxArea=largestAreaInAHistogram(matrix[0]);
+	
+	for(int i=1;i<n;i++){
+        for(int j=0;j<m;j++){
+          //If the current element is one then add the prev row element to it.
+            if(matrix[i][j])
+                matrix[i][j]+=matrix[i-1][j];
+         }
+         //Pass the array to find the largest area in a histogram.
+        maxArea = max(maxArea,largestAreaInAHistogram(matrix[i]));
+	}
+	return maxArea;
+}
+
+int main(){
+	int n,m;
+	cin>>n>>m;
+	
+    vector <vector <int> > matrix(n,vector<int>(m));
+    
+    for(int i=0;i<n;i++)
+    	for(int j=0;j<m;j++)
+    		cin>>matrix[i][j];
+    		
+    cout<<"Area is : "<<largestSubMatrix(matrix)<<endl;
+
+    return 0;
+    
+}

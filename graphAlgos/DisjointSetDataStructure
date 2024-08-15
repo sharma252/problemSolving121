@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+//Node for Disjoint Set DS
+struct node{
+   int parent;
+   int rank;
+};
+vector<node> disJoint;
+
+//Find function to find the Absolute parent for given vertex.
+int find(int vertex){
+  //Parent=-1 means vertex itself is itself absolute parent. 
+   if(disJoint[vertex].parent==-1)
+      return vertex;
+
+  //See here, we updated parent of our vertex before returning it.
+  //This is called Path compresseion.
+   return disJoint[vertex].parent = find(disJoint[vertex].parent);
+}
+
+//Function to modify/maintain changes in Disjoint Set.
+void unionOp(int fromP,int toP){
+
+  //If rank of from vertex is more then from become new parent.
+   if(disJoint[fromP].rank>disJoint[toP].rank){
+      disJoint[toP].parent = fromP;
+      return;
+   }
+   //Otherwise toP
+   else if(disJoint[fromP].rank<disJoint[toP].rank){
+      disJoint[fromP].parent = toP;
+      return;
+   }
+   //If both have same rank update assign anyone of them to other vertex and
+   //increase rank of new parent. 
+   else{
+      disJoint[fromP].parent = toP;
+      disJoint[fromP].rank++;
+      return;
+   }
+
+}
+
+//Function to check cycle in graph.
+bool isCycle(vector <int> adj[],int n){
+   int fromP,toP;
+
+   for(int i=0;i<n;i++){
+      for(auto it : adj[i]){
+         fromP = find(i);
+         toP=find(it);
+      }
+
+    //If both the vertex has same absolute parent then cycle present in graph.
+      if(fromP==toP)
+         return true;
+
+      //Apply Rank Modification or Union Operation.
+      unionOp(fromp,toP);
+   }
+   //If no cycle found return false;
+   return false;
+}
+
+int main(){
+   int n,e;
+   cin>>n>>e;
+
+   disJoint.resize(n);
+   vector <pair<int,int>> adj;
+
+   for(int i=0;i<n;i++){
+      int s,d;
+      cin>>s>>d;
+      adj.push_back({s,d});
+   }
+
+  //Intialise everyone rank to 0 and parent to -1.
+  for(int i=0;i<n;i++){
+      disJoint[i].parent=-1;
+      disJoint[i].rank=0;
+   }
+
+   if(isCycle(adj,n))
+      cout<<"Cycle Exist in Graph."<<endl;
+   else
+      cout<<"No cycle."
+
+}

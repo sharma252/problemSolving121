@@ -1,0 +1,63 @@
+//Quality Backtrack Question.
+#include <bits/stdc++.h>
+using namespace std;
+
+bool isSafe(bool edges[101][101],int vertex,vector<int> &color,int curColor,int n){
+  for(int i=0;i<n;i++){
+      if(edges[vertex][i] && color[i]==curColor)
+        return false;
+  }     
+    return true;
+}
+
+bool coloring(bool edges[101][101],int m,vector <int> &color,int vertex,int n){
+    //If we reach the last vertex that means
+    //It is possible to color the graph with given colors.
+  if(vertex>=n)
+    return true;
+
+  for(int i=1;i<=m;i++){
+      //Try all the colors.
+    if(isSafe(edges,vertex,color,i,n)){
+      color[vertex]=i;
+      
+      //If we find a way return true.
+      if (coloring(edges,m,color,vertex+1,n))
+        return true;
+      
+      //Otherwise mark current as zero and return false.
+        color[vertex]=0;
+    }
+  }
+  return false;
+}
+
+bool graphColoring(bool edges[101][101], int m, int n) {
+    // your code here
+    //Take a color vectore to keep the color number of different color assigned to vertex.
+    vector <int> color(n+1,0);
+
+      return coloring(edges,m,color,0,n);
+}
+
+int main() {
+  //n for vertex, m for colors, e for edges.
+        int n, m, e;
+        cin >> n >> m >> e;
+  
+        bool graph[101][101];
+       
+       //Intially assign all the vertex as false. 
+        for (int i = 0; i < n; i++) {
+            memset(graph[i], 0, sizeof(graph[i]));
+        
+        for (int i = 0; i < e; i++) {
+            int a, b;
+            cin >> a >> b;
+            graph[a - 1][b - 1] = 1;
+            graph[b - 1][a - 1] = 1;
+        }
+        cout << graphColoring(graph, m, n) << endl;
+    }
+    return 0;
+}

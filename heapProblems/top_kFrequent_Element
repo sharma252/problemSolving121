@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+struct node{
+    int num;
+    int freq;
+    node(int n,int f){
+        num=n;
+        freq = f;
+    }
+};
+
+//Special function.
+struct compare{
+    bool operator()(node n1,node n2){
+        return n1.freq<n2.freq;
+    }
+};
+
+  //Easy way is to use hashing only and then sorting which take complexity O(N(log(N)))
+  //But using heap we can optimise it to O(K(log(N)))
+    vector<int> topKFrequent(int nums[],int n, int k) {
+        unordered_map<int,int> mp1;
+        vector<int> ans;
+        
+        for(int i=0;i<n;i++)
+            mp1[nums[i]]++;
+        
+        //Create a heap of type node structure
+        priority_queue<node,vector<node>,compare> pq;
+        
+        //Push all the elements with their freq in heap.
+        for(auto itr : mp1)
+            pq.push(node(itr.first,itr.second));
+        
+        //we pop top k element and return them.
+        while(k--){
+            int top = pq.top().num;
+            pq.pop();
+            ans.push_back(top);
+        }
+        return ans;
+    }
+
+int main(){
+  int n, k;
+  cin >> n >> k;
+
+  int arr[n];
+
+  F(i, 0, n)
+  cin >> arr[i];
+
+  vector<int> ans = topKFrequent(arr, n, k);
+
+  for (auto it : ans)
+    cout << it << " ";
+
+  return 0;
+}

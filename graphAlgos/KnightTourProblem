@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+//BFS to find minimum steps required by knight to reach required output.
+//User defined class for each step by knight and distance covered with it respectively.
+class step{
+  public:
+  int x,y;
+  int dis;
+  step(int x,int y,int dis){
+    this->x = x;
+    this->y = y;
+    this->dis = dis;
+  }
+};
+
+//Check if the current step is valid or not.
+bool isValid(int x,int y,int N){
+  if(x>=1 && x<=N && y>=1 && y<=N)
+    return true;
+  return false;
+}
+
+//Required function:
+int minKnightSteps(int startC[], int targetC[],int N){
+  //Visited array to check if the movement is allowed or not.
+  vector <vector <bool> > visit(N+1,vector <bool> (N+1,false));
+  int x, y;
+  //Possible moves for knight.
+  int dx[] = {-2,-1,1,2,-2,-1,1,2};
+  int dy[] = {-1,-2,-2,-1,1,2,2,1};
+
+  //Intial movement by knight.
+  step s1(startC[0],startC[1],0);
+  //mark visited the intial movement.
+  visit[startC[0]][startC[1]]=true;
+
+  //Queue for BFS.
+  queue <step> q1;
+  q1.push(s1);
+
+  while(!q1.empty()){
+    step s2 = q1.front();
+    q1.pop();
+
+    //If we reach the target return the distance associated with it.
+    if(s2.x==targetC[0] && s2.y == targetC[1])
+      return s2.dis;
+
+    //Otherwise check all the possible moves validate it and if possible, push the step in queue and repeat.
+    for(int i=0;i<8;i++){
+      x = s2.x + dx[i];
+      y = s2.y + dy[i];
+
+      if(isValid(x,y,N) && !visit[x][y]){
+        visit[x][y]=true;
+        q1.push(step(x,y,s2.dis+1));
+      }
+    }
+  }
+  //If no such path found return -1.
+  return -1;
+}
+
+int main(){
+  int n;
+  cin>>n;
+  int startC[2],targetC[2];
+
+  for(int i=0;i<2;i++)
+    cin>>startC[i];
+
+  for(int i=0;i<2;i++)
+    cin>>targetC[i];
+
+
+  cout << minKnightSteps(startC,targetC,n) << endl;
+
+  return 0;
+}

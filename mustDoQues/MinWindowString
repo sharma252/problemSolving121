@@ -1,0 +1,56 @@
+#include <iostream>
+#include <unordered_map>
+#include <climits>
+using namespace std;
+
+string min_window(string s, string p) {
+    unordered_map<char, int> p_freq, window_freq;
+    int left = 0, right = 0;
+    int min_len = INT_MAX, count = 0;
+    string min_window;
+    
+    // Store the frequency of characters in string p
+    for (char c : p) {
+        p_freq[c]++;
+    }
+    
+    while (right < s.length()) {
+        // Expand the window
+        char right_cur = s[right];
+        window_freq[right_cur]++;
+        // If the character is in P and its frequency in the window is 
+        // less than or equal to its frequency in P, increment the count.
+        if (p_freq[right_cur]>0 && window_freq[right_cur]<=p_freq[right_cur]) {
+            count++;
+        }
+        
+        // Contract the window
+        while (count == p.length()) {
+            int cur_size = right-left+1;
+            // If the current window is smaller than the minimum window,
+            //update the minimum window
+            if(cur_size<min_len){
+                ans = s.substr(left,cur_size);
+                min_len=cur_size;
+            }
+            char left_cur = s[left];
+            window_freq[left_cur]--;
+            // If the character is in P and its frequency in the window is
+            // less than its frequency in P, decrement the count.
+            if (p_freq[left_cur]>0 && window_freq[left_cur]<p_freq[left_cur]) {
+                count--;
+            }   
+            left++;
+        }   
+        right++;
+    }
+    return ans.size()>0?ans:"-1";
+}
+
+int main() {
+    string s ,p;
+    cin>>s>>p;
+    string res = min_window(s, p);
+    cout << res << endl;
+    return 0;
+}

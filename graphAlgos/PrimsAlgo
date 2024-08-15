@@ -1,0 +1,73 @@
+//Prim's Algo
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//Somewhat similar to dijkstra implementation.
+
+void addEdge(vector<pair<int,int>> graph[],int s,int e,int w){
+  graph[s].push_back({e,w});
+  graph[e].push_back({s,w});
+}
+
+int minSearch(vector<bool> &visited,vector<int> &dist,int n){
+  int idx,minV = INT_MAX;
+  for(int i=0;i<n;i++){
+    if(!visited[i] && dist[i]<minV){
+      minV = dist[i];
+      idx=i;
+    }
+  }
+  return idx;
+}
+
+void primAlgo(vector<pair<int,int>> graph[],int n){
+  /*
+  Three arrays :
+    1. Visited vertices.
+    2. Distance b/w vertices.
+    3. parent for structuring the tree.
+  */
+
+  vector<bool> visited(n+1,false);
+  vector<int> dist(n+1,INT_MAX);
+  vector<int> parent(n+1);
+
+  dist[0] = 0;
+  parent[0] = -1;
+
+  for(int i=0;i<n-1;i++){
+    int minV = minSearch(visited,dist,n);
+    visited[minV] = true;
+
+    for (auto it: graph[minV]){
+      if(!visited[it.first] && it.second && it.second<dist[it.first]){
+        dist[it.first] = it.second;
+        parent[it.first] = minV;
+      }
+    }
+  }
+
+  for(int i=1;i<n;i++){
+    cout<<parent[i]<<"->"<<i<<" : "<<dist[i]<<endl;
+  }
+
+
+}
+
+int main(){
+  int n,e;
+  cin>>n>>e;
+
+  vector<pair<int,int>> graph[n+1];
+
+  for(int i=0;i<e;i++){
+    int s,e,w;
+    cin>>s>>e>>w;
+    addEdge(graph,s,e,w);
+  }
+
+  primAlgo(graph,n);
+  
+  return 0;
+}

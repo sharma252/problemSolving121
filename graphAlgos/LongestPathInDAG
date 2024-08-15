@@ -1,0 +1,65 @@
+//Only possible for Directed Acyclic Graph.
+#include <bits/stdc++.h>
+using namespace std;
+
+//Topological Sorting Function.
+void topologicalSort(vector<vector<pair <int,int>> > adj,int cur,vector<bool> visited,stack<int> &s1){
+    visited[cur]=true;
+
+    for(auto it : adj[cur]){
+        if(!visited[it.first]){
+            topologicalSort(adj,it.first,visited,s1);
+        }
+    }
+    s1.push(cur);
+}
+
+void longestDistance(vector<vector<pair <int,int>> > adj,int n,int src){
+    vector <int> dist(n,INT_MIN);
+    vector<bool> visited(n,false);
+
+    stack<int> s1;
+
+    for(int i=0;i<n;i++){
+        if(!visited[i])
+            topologicalSort(adj,i,visited,s1);
+    }
+
+    //Assign distance of source as zero and every other as INT_MIN.
+    dist[src]=0;
+
+    while(!s1.empty()){
+        int cur = s1.top();
+        s1.pop();
+        
+        //Find the element in stack whose dist is zero that is source.
+        if(dist[cur]!=INT_MIN){
+            for(auto it : adj[cur]){
+              //If distance of any vertex is found out to be more then currently assigned.
+              //Assign the new distance.
+                if(dist[it.first]<dist[cur] + it.second)
+                    dist[it.first] = dist[cur] + it.second;
+            }
+        }
+    }
+
+    for(auto it : dist)
+        if(it!=INT_MIN)
+            cout<<it<<" ";
+
+}
+
+int main(){
+    int n, e,src;
+    cin >> n >> e>> src;
+
+    vector<vector<pair <int,int>> > adj(n);
+
+    for (int i = 0; i < e; i++){
+        int s, d, w;
+        cin >> s >> d >> w;
+        adj[s].push_back({d,w});
+    }
+
+    longestDistance(adj, n,src);
+}

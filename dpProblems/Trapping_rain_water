@@ -1,0 +1,88 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+// Trapping Rain Water Problem Optimised Approach:
+//Time Complexity : O(n), Space Complexity : O(n)
+int maxTrappedWater(vector<int> nums){
+  int n = nums.size();
+
+  //Atleast three block is required to store water.
+  if(n<=2)
+    return 0;
+
+  //Two array will be used one to store max height to the left and 
+  //One for max height to the right
+  //We set intial value for left as index 0 and right as n-1
+  int maxLeft[n];
+  int maxRight[n];
+  int waterTrap=0;
+  maxLeft[0] = nums[0];
+  maxRight[n-1] = nums[n-1];
+
+  //max_left for every index is calculated here.
+  for(int i=1;i<n;i++){
+    maxLeft[i] = max(maxLeft[i-1],nums[i]);
+  }
+
+  //max_right for every index is calculated here.
+  for(int j=n-2;j>0;j--){
+    maxRight[j] = max(maxRight[j+1],nums[j]);
+  }
+
+  //Now to calculate water_trap use formula min(left,right) - cur_value
+  //The formula can be easily understandable if you do it using copy-pen.
+  for(int i=0;i<n-1;i++){
+    waterTrap += min(maxLeft[i],maxRight[i]) - nums[i];
+  }
+
+  return waterTrap;
+}
+
+//Highly Optimised Approach:
+//Time Complexity : O(n), Space complexity : constant
+int maxTrappedOptimised(vector<int> nums){
+  int n = nums.size();
+
+  int max_left = nums[0];
+  int max_right = nums[n-1];
+  int left_ptr = 1;
+  int right_ptr = n-1;
+  int trapped_water =0;
+
+  //In this two-pointer algo, the only catch is we calculate water trapped is by using 
+  //the fact that the onw which store minimum value from max_left,max_right minus current 
+  //value. If observed deeply it is somewhat same as above approach.
+  while(left_ptr<=right_ptr){
+    if(max_left < max_right){
+      if(nums[left_ptr]>=max_left)
+        max_left = nums[left_ptr];
+      else
+        trapped_water += max_left - nums[left_ptr];
+      left_ptr++;
+    }
+    else{
+      if(nums[right_ptr]>=max_right)
+        max_right = nums[right_ptr];
+      else
+        trapped_water += max_right - nums[right_ptr];
+      right_ptr--;
+    }
+  }
+  return trapped_water;
+
+}
+
+int main(){
+  int n;
+  cin >> n;
+
+  vector<int> nums(n);
+
+  F(i,0,n)
+    cin>>nums[i];
+
+  cout<<maxTrappedWater(nums)<<endl;
+
+  return 0;
+}

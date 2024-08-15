@@ -1,0 +1,46 @@
+//Self explanatory.
+int getMin(){
+  if(s.empty())
+  return -1;
+  return min_ele;
+}
+
+int pop(){
+  if(s.empty())
+    return -1;
+  int ans;
+  /*
+    If we found out that the stack contain an element which is less 
+    then the min_ele that means it is the forged number
+    Although we return min_ele as ans
+    But update it for next case as we know that a number lower then 
+    min_ele present here while pushing.
+    Otherwise the stack top is answer.
+  */
+  if(s.top()<min_ele){
+    ans = min_ele;
+    min_ele = 2*min_ele - s.top();
+  } else{
+    ans = s.top();
+  }
+  s.pop();
+  return ans;
+}
+       
+void push(int x){
+  /*
+    If the number to push is less then min_ele
+    we store the differnce between min_ele to twice of 
+    cur_ele, so that we can calcaulte the original 
+    element again. Understood using the picture.
+  */
+  if(s.empty()){
+    s.push(x);
+    min_ele = x;
+  } else if(min_ele<x){
+  s.push(x);
+  } else{
+    s.push(2*x-min_ele);
+    min_ele = x;
+  }
+}

@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+//Sorting a k sorted array
+vector<int> topK(int arr[], int n, int k){
+  vector<int> ans;
+  //Max heap store intial k elements.
+  priority_queue<int, vector<int>, greater<int>> pq(arr, arr + k + 1);
+
+  //From k to n, first pop the top element from heap and push it in ans
+  //Then push the next element in heap.
+  for (int i = k + 1; i < n; i++){
+    ans.push_back(pq.top());
+    pq.pop();
+    pq.push(arr[i]);
+  }
+
+  while (!pq.empty()){
+    ans.push_back(pq.top());
+    pq.pop();
+  }
+
+  return ans;
+}
+
+int main(){
+  int n, k;
+  cin >> n >> k;
+
+  int arr[n];
+
+  F(i, 0, n)
+  cin >> arr[i];
+
+  vector<int> ans = topK(arr, n, k);
+
+  for (auto it : ans)
+    cout << it << " ";
+
+  return 0;
+}

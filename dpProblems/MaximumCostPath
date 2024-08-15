@@ -1,0 +1,63 @@
+/*
+  This is maximum cost path question. It can be converted into Minimum path Cost question,
+  just by changing max of right or down to min of right or down.
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+//Recursive Approach:
+int maxPathSum(vector<vector<int>> v1,int n,int m){
+  //If we reach the last row or column we return 0. 
+  if(n<0 || m<0)
+    return 0;
+
+  //Otherwise we return curCost + max(upperRight or sideLeft).
+  return v1[n][m] + max(maxPathSum(v1,n-1,m),maxPathSum(v1,n,m-1));
+}
+
+int maxApple(vector<vector<int>> v1){
+  int n = v1.size();
+  int m = v1[0].size();
+  int dp[n+1][m+1];
+
+  //We actually don't need to use the extra matrix here cuz we will get the same result by using this matrix only.
+  
+  F(i,1,m)
+    v1[0][i] +=v1[0][i-1];
+
+  F(i,1,n)
+    v1[i][0] +=v1[i-1][0];
+
+  for (int i = 1; i < n; i++){
+    for (int j = 1; j < m; j++){
+      v1[i][j] += max(v1[i-1][j],v1[i][j-1]);
+    }
+  }
+  
+  return v1[n-1][m-1];
+}
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+
+  vector<vector<int>> v1(n, vector<int>(m));
+
+  for (int i = 0; i < n; i++){
+    for (int j = 0; j < m; j++)
+      cin >> v1[i][j];
+  }
+
+  cout<< maxPathSum(v1,n-1,m-1)<<endl;
+  cout << maxApple(v1) << endl; 
+
+  return 0;
+}
+
+/* 4 4
+1 2 3 4
+2 2 3 4
+3 2 3 4
+4 5 6 7 */

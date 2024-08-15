@@ -1,0 +1,69 @@
+/*
+                                                                    Water Jug Problem:
+Requirement : To reach a target value;
+jug1, jug2 and target is given
+now we can not make operation on both the jug
+so we find total capacity first
+if it is less then total return false, as it is not possible to find requirement 
+
+Now we use dfs approach
+Start as zero node bcz zero is the intial amount of water in jugs
+now we check the operation allowed:
+	Fill the jug
+	Empty the jug
+	Pour from one to another
+We can pour water only if the either of the jug is completely filled otherwise measurement is not possible  so eventually operation allowed is :
+ either jug1 capacity or jug2 capacity
+So we store these four operation in a vector.
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+bool canMeasureWater(int jug1, int jug2, int target){
+    // The total of both the jugs
+    int total = jug1 + jug2;
+    // If total is less then target we return.
+    if (total < target)
+        return false;
+
+    // All possible operation are stored in a vector.
+    vector<int> op = {jug1, -jug1, jug2, -jug2};
+    // Queue for BFS
+    queue<int> q1;
+    // Visited list
+    unordered_map<int, bool> visited;
+    q1.push(0);
+    visited[0] = true;
+
+    while (!q1.empty()){
+        int cur = q1.front();
+        q1.pop();
+        if (cur == target)
+            return true;
+        for (int i = 0; i < op.size(); i++){
+            int node = op[i] + cur;
+            if (node == target)
+                return true;
+            // If cur become less then zero or more then total we skip that node.
+            if (node < 0 || node > total)
+                continue;
+            if (!visited[node]){
+                q1.push(node);
+                visited[node] = true;
+            }
+        }
+    }
+    // If we are not able to find it we return false.
+    return false;
+}
+
+int main(){
+    int jug1, jug2, target;
+    cin >> jug1 >> jug2 >> target;
+
+    cout << canMeasureWater(jug1, jug2, target) << endl;
+
+    return 0;
+}

@@ -1,0 +1,87 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+int mem[1000][1000];
+
+// Memoization and recursive approach  is easily undersatandable after unbounded knapsack.
+int knapsack(int wt[],int val[],int n,int w){
+    if(n<0 || w==0)
+        return 0;
+
+    if(wt[n]>w)
+        return knapsack(wt,val,n-1,w);
+
+    return max(val[n]+knapsack(wt,val,n-1,w-wt[n]),knapsack(wt,val,n-1,w));
+}
+
+//Dp approach, a little difficult one:
+int knapsackDP(int wt[],int val[],int n,int w){
+    int dp[n+1][w+1];
+
+    //First column assigned 0 ---equn1
+    for(int i=0;i<=n;i++)   
+        dp[i][0]=0;
+
+    //First row assigned 0  ---equn2
+    for(int j=0;j<=w;j++)
+        dp[0][j]=0;
+
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=w;j++){
+            /*  Now see we gonna do i-1 and not i coz if we see clearly
+            our iteration start at 1 but we surely have some weight and val at 0 which
+            we can't neglect, although we consider it in equn1 and 2 but we assigned 0 there,
+            see no use for weight and val at i==0      */
+            if(wt[i-1]<=j)
+                dp[i][j] = max(dp[i-1][j],val[i-1]+dp[i-1][j-wt[i-1]);
+            else
+                dp[i][j] = dp[i-1][j];
+        }
+    }
+    return dp[n][w];
+
+}
+
+int knapsackMem(int wt[],int val[],int n,int w,bool flag){
+    if(n<0 || w==0)
+        return 0;
+
+    if(mem[w][n]!=-1)
+        return mem[w][n];
+
+    if(wt[n]>w)
+        return knapsack(wt,val,n-1,w);
+
+    return mem[w][n] = max(val[n]+knapsackMem(wt,val,n-1,w-wt[n],1),knapsackMem(wt,val,n-1,w,1));
+}
+
+int knapsackMem(int wt[],int val[],int n,int w){
+
+    for(int i=0;i<=w;i++){
+        for(int j=0;j<=n;j++)
+            mem[i][j]=-1;
+    }
+
+    int ans =  knapsackMem(wt,val,n,w,"true");
+    return ans;
+}
+
+int main(){
+    int n,w;
+    cin>>n>>w;
+
+    int wt[n],val[n];
+
+    F(i,0,n)
+        cin>>wt[i];
+
+    F(i,0,n)
+        cin>>val[i];
+
+    cout<<knapsack(wt,val,n-1,w)<<endl;
+    cout<<knapsackMem(wt,val,n-1,w)<<endl;
+    cout<<knapsackDP(wt,val,n,w)<<endl;
+
+
+    return 0;
+}

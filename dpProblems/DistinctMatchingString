@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+
+int matchingStringDP(string s1, string s2){
+  int n = s1.size();
+  int m = s2.size();
+  int dp[n + 1][m + 1];
+
+  for (int i = 0; i <= n; i++){
+    for (int j = 0; j <= m; j++){
+      if (i == 0)
+        dp[i][j] = 1;
+      else
+        dp[i][j] = 0;
+    }
+  }
+
+  /* for (int i = 0; i <= n; i++){
+    for (int j = 0; j <= m; j++){
+        cout<<dp[i][j]<<" ";
+    }
+    cout<<endl;
+  } */
+
+  for (int i = 1; i <= n; i++){
+    for (int j = 1; j <= m; j++){
+      if (s1[i - 1] == s2[j - 1])
+        dp[i][j] = dp[i - 1][j - 1] + dp[i][j - 1];
+      else
+        dp[i][j] = dp[i][j - 1];
+    }
+  }
+  return dp[n][m];
+}
+
+int matchingString(string s1, string s2){
+  int n = s1.size();
+  int m = s2.size();
+
+  //See if our own string is empty, or both the string are empty at some point at same time then we add 1 to ans as that is counted in a match. 
+  if ((n == 0 && m == 0) || n == 0)
+    return 1;
+  //If the other string get empty before ours then ans will be zero.
+  if (m == 0)
+    return 0;
+
+  //If current character match then we check for other match leaving current character in both the string or try to find the match in other string by leaving current element.
+  if (s1[n - 1] == s2[m - 1])
+    return matchingString(s1.substr(0, n - 1), s2.substr(0, m - 1)) + matchingString(s1, s2.substr(0, m - 1));
+    //Otherwise we just leave current character in other string.
+  else
+    return matchingString(s1, s2.substr(0, m - 1));
+}
+
+int main(){
+  string s1, s2;
+  cin >> s1 >> s2;
+
+  cout << "RecAns: " << matchingString(s1, s2) << endl;
+  cout << "DPAns: " << matchingStringDP(s1, s2) << endl;
+
+  return 0;
+}

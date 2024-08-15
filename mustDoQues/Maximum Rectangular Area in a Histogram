@@ -1,0 +1,32 @@
+The code of Approach_2 is : 
+long long getMaxArea(long long arr[], int n){
+        //1.) Find left limits  2.) Find right limits
+        //3.) Find area         4.) Find the largest area
+        long long max_area=0;
+        stack<long long> st;
+        vector <long long> left_small(n);
+        vector <long long> right_small(n);
+        for(int i=0;i<n;i++){
+            while(!st.empty() && arr[st.top()]>=arr[i])
+                st.pop();
+            if(st.empty())
+                left_small[i] = 0;
+            else
+                left_small[i] = st.top()+1;
+            st.push(i);
+        } 
+        while(!st.empty())
+            st.pop();
+        for(int i=n-1;i>=0;i--){
+            while(!st.empty() && arr[st.top()]>=arr[i])
+                st.pop();
+            if(st.empty())
+                right_small[i] = n-1;
+            else
+                right_small[i] = st.top()-1;
+            st.push(i);
+        }
+        for(int i=0;i<n;i++)
+            max_area = max(max_area,(right_small[i]-left_small[i]+1)*arr[i]);
+        return max_area;
+    }

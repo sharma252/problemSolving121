@@ -1,0 +1,81 @@
+//Egg Droping Problem:
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int minFloor(int egg,int floor){
+
+    vector <vector <int>> dp(egg+1,vector<int>(floor+1,INT_MAX));
+
+    //Base cases already explained.
+    for(int i=1;i<=egg;i++){
+        dp[i][0]=0;
+        dp[i][1]=1;    
+    }
+
+    for(int i=1;i<=floor;i++)
+        dp[1][i] = i;
+
+
+    for(int i=2;i<=egg;i++)
+        for(int j=2;j<=floor;j++){
+            //For every floor we start from floor One and check all the possible simulation.
+            for(int curFloor=1; curFloor<=j;curFloor++)
+                    dp[i][j] = min(dp[i][j],1 + max(dp[i-1][curFloor-1],dp[i][j-curFloor]));
+        }
+            
+    return dp[egg][floor];
+}
+
+int minFloor(int egg,int floor,vector <vector<int>> dp){
+    if(floor==0 || floor==1)
+        return floor;
+
+    if(egg==1)
+        return floor;
+
+    if(dp[egg][floor] != 1000)
+        return dp[egg][floor];
+
+    int threshold,minThreshold=INT_MAX;
+
+    //Try every floor one by one :
+    for(int curFloor=1;curFloor<floor;curFloor++){
+        //If egg breaks we go one floor down and decrease egg by one
+        //If it doesn't we decrease the floor by curFloor.
+        threshold = max(minFloor(egg-1,curFloor-1,dp),minFloor(egg, floor-curFloor,dp));
+        minThreshold = min(threshold,minThreshold);
+    }
+    return dp[egg][floor] = minThreshold+1;
+}
+
+int minFloorRec(int egg,int floor){
+    if(floor==0 || floor==1)
+        return floor;
+
+    if(egg==1)
+        return floor;
+
+    int threshold,minThreshold=INT_MAX;
+
+    //Try every floor one by one :
+    for(int curFloor=1;curFloor<floor;curFloor++){
+        //If egg breaks we go one floor down and decrease egg by one
+        //If it doesn't we decrease the floor by curFloor.
+        threshold = max(minFloor(egg-1,curFloor-1),minFloor(egg,floor-curFloor));
+        minThreshold = min(threshold,minThreshold);
+    }
+    return minThreshold+1;
+}
+
+int main(){
+    int egg,floor;
+    cin>>egg>>floor;
+
+    cout<<minFloorRec(egg,floor)<<endl;
+    vector <vector<int>> dp(egg+1,vector<int>(floor+1,1000));
+    cout<<minFloor(egg,floor,dp)<<endl;
+    cout<<minFloor(egg,floor)<<endl;
+
+    return 0;
+}

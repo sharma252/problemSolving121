@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F(i, L, R) for (int i = L; i < R; i++)
+ 
+bool cycleHelper(vector<int> adj[], int parent, vector<bool> visited, int cur){
+  visited[cur] = true;
+
+  for(auto it:adj[cur]){
+     if(!visited[it] && (cycleHelper(adj,cur,visited,it))){
+        return true;
+     }
+     else if(visited[it] && it!=parent){
+       return true;}
+     }
+     /*
+     visited[cur]=false;
+     We use to mark the cur node as false if we are passing the visited array as reference
+     otherwise we can still make the code work without passing visited array as ref. or by value.
+     */
+     return false;
+}
+
+bool isCycle(vector<int> adj[], int v){
+  vector<bool> visited(v + 1, false);
+
+  for (int i = 0; i < v; i++)  {
+    if (!visited[i]){
+      if (cycleHelper(adj, -1, visited, i))
+        return true;
+    }
+  }
+  return false;
+}
+
+int main(){
+  int n;
+  cin >> n;
+
+  vector<int> edges[n];
+
+  for (int i = 0; i < n; i++){
+    int src, dest;
+    cin >> src >> dest;
+    edges[src].push_back(dest);
+  }
+
+  cout << isCycle(edges, n) << endl;
+
+  return 0;
+}

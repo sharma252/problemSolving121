@@ -1,0 +1,76 @@
+//Bellman Ford for Negative weight edge cycle Detection.
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//Graph class for all three types of graph edge property.
+class graph{
+  public:
+  int src;
+  int dest;
+  int weight;
+};
+
+//Algo Implementation: 
+void bellmanFord(vector <graph> g,int v,int e){
+  vector<int> dist(v,INT_MAX);
+  vector<int> parent(v);
+
+  dist[0] =0;
+  parent[0] =-1;
+  bool isUpdated = false;
+  //we run loop for total vertices - 1 times.
+  for(int i=0;i<v-1;i++){
+    isUpdated=false;
+    //Pick every edge and check if we find any new shortest path in graph.
+    for(int j=0;j<e;j++){
+      int src = g[j].src;
+      int dest = g[j].dest;
+      int weight = g[j].weight;
+      if(dist[src] + weight < dist[dest] && dist[src]!=INT_MAX){
+        dist[dest] = dist[src] + weight;
+        parent[dest] = src;
+        isUpdated = true; 
+      }
+    }
+    //If we don't find the new path in two iteration simultaneouly we just break the loop.
+    //Bcz that define no such new path exist.
+    if(!isUpdated)
+      break;
+  }
+
+  //The final vth iteration to check if cycle exist or not.
+  for(int j=0;j<e && isUpdated;j++){
+    int src = g[j].src;
+    int dest = g[j].dest;
+    int weight = g[j].weight;
+    if(dist[src] + weight < dist[dest] && dist[src]!=INT_MAX)
+      cout<<"Negative Cycle is Present. "<<endl;
+      return ;
+  }
+
+  //To print the shortest path.
+  for(int i=1;i<v;i++){
+    cout<<parent[i]<<"->"<<i<<" : "<<dist[i]<<endl;
+  }
+}
+
+int main(){
+  int v,e;
+  cin>>v>>e;
+
+  //We have taken a graph of class type with three data type.
+  vector <graph> g(e);
+
+  for(int i=0;i<e;i++){
+    int s,d,w;
+    cin>>s>>d>>w;
+    g[i].src =s;
+    g[i].dest = d;
+    g[i].weight = w;
+  }
+
+  bellmanFord(g,v,e);
+
+  return 0;
+}

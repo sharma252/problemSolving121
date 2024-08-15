@@ -1,0 +1,95 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//This is the node type of regular linked list.
+struct ListNode{
+    int val;
+    ListNode* next;
+    ListNode(int v){
+        val = v;
+        next=NULL;
+    }
+};
+
+//This is the special node that we defined for our heap.
+//It stores the the linked list node along with the index(i.e. number of node out of k).
+struct heapNode{
+    ListNode *cur;
+    int idx;
+    heapNode(ListNode* cp,int i){
+        cur = cp;
+        idx=i;
+    }
+};
+
+//If we are using comaprator for user defined ds
+//We have to explicitely define it. 
+struct compare{
+    bool operator()(heapNode a,heapNode b){
+        return a.cur->val>=b.cur->val;
+    }
+};
+
+ListNode* mergeKLists(vector<ListNode*>& ptr) {
+    ListNode*head=NULL,*tail=NULL;
+    int k= ptr.size();
+        //If their is no list we return null.
+    if(k==0)
+        return head;
+
+    //Heap of user defined ds.
+    priority_queue<heapNode,vector<heapNode>,compare> heap;
+
+    //A temporary storage we will be using for storing index of list out of k.
+    vector<ListNode*> ptrIdx(k);
+
+    //Firstly store the first element of all the list in temp vector and push them in min heap too.
+    for(int i=0;i<k;i++){
+        ptrIdx[i] = ptr[i];
+        if(ptrIdx[i]!=NULL)
+            heap.push(heapNode(ptrIdx[i],i));
+    }
+
+    //If all the index in vector is null we return null.
+    if(heap.empty())
+        return head;
+        
+    //Assign head and tail both the top node present in min heap.
+    head = tail = heap.top().cur;
+    //Take the index of minimum node(it is used afterwards).
+    int idx = heap.top().idx;
+    //Pop the top element.
+    heap.pop();
+        
+    //Move the pointer of minimum node list to the next pointer.
+    ptrIdx[idx] = ptrIdx[idx]->next;
+
+    //If next pointer exist push it to the heap along with the index.
+    if(ptrIdx[idx]!=NULL)
+        heap.push(heapNode(ptrIdx[idx],idx));
+
+    //Now one by one take the top of heap, make tail point to it.
+    //And repeat the same procedure mentioned in line 65 to 70.
+    while(!heap.empty()){
+        ListNode* temp = heap.top().cur;
+        idx = heap.top().idx;
+        heap.pop();
+
+        tail->next = temp;
+        tail=tail->next;
+
+        ptrIdx[idx] = ptrIdx[idx]->next;
+
+        if(ptrIdx[idx]!=NULL)
+            heap.push( heapNode(ptrIdx[idx],idx));
+    }
+    //Finally return the head.
+    return head;
+}
+
+int main(){
+    ListNode*head;
+    cout<<"Hello,World!"<<endl;
+    return 0;
+}

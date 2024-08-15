@@ -1,0 +1,93 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+class UserDefinedDS{
+protected:
+    /*
+        We take two heap, small Heap which is of type maxHeap
+        and big Heap which is of type minHeap. Why we are doing this
+        See the primary condition is array must be sorted but for our
+        result we found median according to median formula i.e.:
+        if size of array is even it is avg. of middle two elements
+        and for odd it is the middle element. So if we maintain above two heap
+        we eventually have those middle two elements at right place.
+    */
+    priority_queue<int,vector<int>> smallHeap;
+    priority_queue<int,vector<int>, greater<int>> bigHeap;
+public:
+    void pushInDS(int num){
+        //Small Heap is maxHeap && big heap is min Heap.
+        int smallHeapSize = smallHeap.size();
+        int bigHeapSize = bigHeap.size();
+        //Case1: We consider it for intialization mostly push first element in small Heap.
+        if(smallHeapSize==0)
+            smallHeap.push(num);
+        //Case2: If both heap contains equal element.
+        else if(smallHeapSize==bigHeapSize){
+            //Check if number is greater then smallHeap push it in big heap.
+            if(num>smallHeap.top())
+                bigHeap.push(num);
+            //Otherwise to small heap.
+            else
+                smallHeap.push(num);
+        }
+        //Case3: The most important and confusing one, what if size is not equal.
+        else{
+            //Four cases arises here:
+            //Number is greater then equal to small heap and small heap
+            //is already containing more elements then big Heap.
+            //In that case push number of big heap directly to maintain the order.
+            if(num>=smallHeap.top() && smallHeapSize>bigHeapSize)
+                bigHeap.push(num);
+            //What if number is smaller then small heap top then we
+            //have to pop the top element from small heap. Push it in
+            //big heap and push the number now in small heap. This
+            //way we maintain the order.
+            else if(num<smallHeap.top() && smallHeapSize>bigHeapSize){
+                int temp = smallHeap.top();
+                smallHeap.pop();
+                smallHeap.push(num);
+                bigHeap.push(temp);
+            }
+            //The below two cases are just same as above two 
+            //Here we are checking for big heap.
+            else if(num>=bigHeap.top() && smallHeapSize<bigHeapSize){
+                int temp = bigHeap.top();
+                bigHeap.pop();
+                bigHeap.push(num);
+                smallHeap.push(temp);
+            }
+            else
+                smallHeap.push(num);
+        }
+    }
+
+    int findMedian(){
+      //If size of both the heap are equal that means the array have even number of elements.
+        if(smallHeap.size()==bigHeap.size())
+            return (bigHeap.top() + smallHeap.top())/2;
+      //Otherwise it contains odd elements and we return the middle element of the array.
+        else
+            return bigHeap.size()>smallHeap.size() ? bigHeap.top() : smallHeap.top();
+    }
+};
+
+int main(){
+    int n;
+    cin>>n;
+
+    vector<int> arr(n);
+
+    F(i,0,n)
+        cin>>arr[i];
+
+    UserDefinedDS obj;
+    
+    for(auto itr : arr){
+        obj.pushInDS(itr);
+        cout<<obj.findMedian()<<" ";
+    }
+
+  return 0;
+}

@@ -1,0 +1,93 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int lisMem(int arr[],int cur,int mem[]){
+    if(cur==0)
+        return mem[cur];
+
+    if(mem[cur]!=1)
+        return mem[cur];
+
+    int ans=1;
+    for(int i=cur-1;i>=0;i--){
+        if(arr[i]<arr[cur])
+            mem[cur]=ans = max(ans,1+lisMem(arr,i,mem));
+    }
+    return mem[cur];
+}
+
+int lisMem(int arr[],int n){
+    int mem[n+1];
+
+    F(i,0,n+1)
+        mem[i]=1;
+
+    int ans=1;
+
+    for(int i=0;i<n;i++){
+        ans = max(ans,lisMem(arr,i,mem));
+    }
+    return ans;
+}
+
+int lisHelper(int arr[],int cur){
+    //For 0th element as already disscussed answer should be one.
+    if(cur==0)
+        return 1;
+
+    int ans=1;
+    //Observe clearly for every cur loop is running from cur-1 to cur and passing i as args for further calc.
+    for(int i=cur-1;i>=0;i--){
+        //Self definable logic.
+        if(arr[i]<arr[cur])
+            ans = max(ans,1+lisHelper(arr,i));
+    }
+    //try to do a dry run for better understanding.
+    return ans;
+
+}
+
+int lis(int arr[],int n){
+    //Answer gonna be atleast one as every element is itself a increasing subsequence.
+    int ans=1;
+
+    //Traverse through whole array to find the max ans.
+    for(int i=0;i<n;i++)
+        ans = max(ans,lisHelper(arr,i));
+    return ans;
+}
+
+int lisDP(int arr[],int n){
+    int dp[n+1],maxLen=1;
+
+    F(i,0,n+1)
+        dp[i]=1;
+
+    for(int i=1;i<n;i++){
+        //cout<<dp[i]<<endl;
+        for(int j=0;j<i;j++){
+            if(arr[j]<arr[i]){
+                dp[i] = max(dp[i],1+dp[j]);
+                maxLen = max(maxLen,dp[i]);    
+            }
+        }
+    }
+    return maxLen;
+}
+
+int main(){
+    int n,w;
+    cin>>n;
+
+    int arr[n];
+
+    F(i,0,n)
+        cin>>arr[i];
+
+    cout<<lis(arr,n)<<endl;
+    cout<<lisMem(arr,n)<<endl;
+    cout<<lisDP(arr,n)<<endl;
+
+    return 0;
+}

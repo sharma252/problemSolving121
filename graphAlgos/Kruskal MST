@@ -1,0 +1,106 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+//For Disjoint Set Data Structure
+struct node{
+    int parent;
+    int rank;
+};
+
+// For our Graph edge.
+struct edge{
+    int src;
+    int dest;
+    int weight;
+};
+
+vector<node> disJoint;
+//The final MST.
+vector<edge> mst;
+
+//The below two functions are explained in Disjoint Set DS.
+int find(int child){
+    if (disJoint[child].parent == -1)
+        return child;
+
+    return disJoint[child].parent = find(disJoint[child].parent);
+}
+
+void unionOp(int fromP, int toP){
+    if (disJoint[fromP].rank > disJoint[toP].rank){
+        disJoint[toP].parent = fromP;
+        return;
+    }
+    else if (disJoint[fromP].rank < disJoint[toP].rank){
+        disJoint[fromP].parent = toP;
+        return;
+    }
+    else{
+        disJoint[fromP].parent = toP;
+        disJoint[fromP].rank++;
+        return;
+    }
+}
+
+//Sort on the basis of weight.
+bool compare(edge e1, edge e2){
+    return e1.weight < e2.weight;
+}
+
+//To print final MST.
+void printMST(){
+    sort(mst.begin(), mst.end(), compare);
+    for (auto it : mst)
+        cout << it.src << " " << it.dest << " " << it.weight << endl;
+}
+
+void kruskalMST(vector<edge> graph, int n, int e){
+    int from, to;
+    //Sort the given graph on the basis of minimum weight.
+    sort(graph.begin(), graph.end(), compare);
+    int i = 0, j = 0;
+
+    //Two pointer i and j :
+    //i for just pushinh n-1 edges in final MST and
+    //j to traverse all vertices.
+    while (i < n - 1 && j < e){
+        from = find(graph[j].src);
+        to = find(graph[j].dest);
+
+        if (from == to){
+            j++;
+            continue;
+        }
+
+        unionOp(from, to);
+        //Push the vertex in graph.
+        mst.push_back(graph[j]);
+        i++;
+        j++;
+    }
+    //Print the mst.
+    printMST();
+}
+
+int main(){
+    int n, e;
+    cin >> n >> e;
+
+    disJoint.resize(n);
+    vector<edge> adj(n);
+
+    for (int i = 0; i < e; i++){
+        int s, d, w;
+        cin >> s >> d >> w;
+        adj[i].src = s;
+        adj[i].dest = d;
+        adj[i].weight = w;
+    }
+
+    for (int i = 0; i < n; i++){
+        disJoint[i].parent = -1;
+        disJoint[i].rank = 0;
+    }
+
+    kruskalMST(adj, n, e);
+}

@@ -1,0 +1,106 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+int minCoinChange(int amount, vector<int> denoms){
+    if(amount==0)   //If amount is zero return 0.
+        return 0;
+
+    //Take one variable as INT_MAX if no such combination of coins exists we return infinite.
+    int res = INT_MAX;
+
+    for(auto it : denoms){
+        /*
+        for everyType of coins check if present coin is less then req amount 
+        if yes subtract the amount by coin and add one to ans 
+        iff your present ans is less than any previous result.
+        */      
+        int subRes;
+        if(it<=amount){
+            subRes = minCoinChange(amount-it,denoms);
+            
+            if(subRes != INT_MAX && subRes+1 < res)
+            res = subRes+1;
+        }
+    }
+    return res;
+}    
+
+//Memoization code is self explainatory
+int minCoinChange(int amount, vector<int> denoms,vector <int> &mem){
+    if(amount==0)
+        return 0;
+
+    if(mem[amount] != INT_MAX)
+        return mem[amount];
+
+    int res = INT_MAX;
+
+    for(auto it : denoms){
+    int subRes;
+        if(it<=amount){
+            subRes = minCoinChange(amount-it,denoms,mem);
+            
+            if(subRes != INT_MAX && subRes+1 < res){
+                res = subRes+1;
+            }
+        }
+    }
+    return  mem[amount] = res;
+}
+
+//DP method is quite similar to Memoization.
+int minCoinChangeDP(int amount,vector<int> denoms){
+    vector<int> dp(amount+1,INT_MAX);
+    dp[0] = 0;
+
+   for(int curAmount=1;curAmount<=amount;curAmount++){
+        for(auto it : denoms){
+        //For every coin we check if (current amount - coin[i]) >=0 and we are not going in negative values i.e. INT_MAX. 
+            if(curAmount-it >=0 && dp[curAmount-it]!=INT_MAX){
+                dp[curAmount] = min(dp[curAmount],dp[curAmount-it] + 1); 
+            }
+        }
+    }
+    return dp[amount];
+}
+
+//2D Space But easy to understand algorithm:
+int coinChange(vector<int>& coin, int amount) {
+        int n=coin.size();
+        vector<vector<int>> dp(n+1,vector<int>(amount+1,0));
+
+        for(int i=0;i<=n;i++)
+            dp[i][0]=0;
+    
+        //I am taking INT_MAX-1 cuz it is not possible to add 1 in INT_MAX.
+        for(int i=0;i<=amount;i++)
+            dp[0][i]=INT_MAX-1;
+
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=amount;j++){
+            //Self explantory : If change is possible with current coin take min of above row and cur coloumn - coin[i-1] column.
+                if(j>=coin[i-1])
+                    dp[i][j]=min(dp[i-1][j],1+dp[i][j-coin[i-1]]);
+                else
+                    dp[i][j]=dp[i-1][j];
+            }
+        }
+        //If final ans is INT_MAX-1 that means it is not possible make the change so we return -1.
+        return dp[n][amount]==INT_MAX-1 ? -1 : dp[n][amount];
+    }
+
+int main(){
+    vector<int> denoms = {1,5,6,9};
+
+    int mon;
+    cin>>mon;
+
+    vector<int> mem(mon+1,INT_MAX);
+
+    cout<<minCoinChange(mon,denoms,mem)<<endl;
+    cout<<minCoinChange(mon,denoms)<<endl;
+    cout<<minCoinChangeDP(mon,denoms)<<endl;
+    
+    return 0;
+}

@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Compute the failure function (partial match table) for the pattern string
+vector<int> failure_function(const string& pattern) {
+    int m = pattern.size();
+    vector<int> f(m);
+    f[0] = 0;
+    int j = 0;
+    for (int i = 1; i < m; i++) {
+        // Use previous failure function values to update f[i]
+        while (j > 0 && pattern[i] != pattern[j]) {
+            j = f[j-1];
+        }
+        // If pattern[i] matches pattern[j], increment j and update f[i]
+        if (pattern[i] == pattern[j]) {
+            j++;
+        }
+        f[i] = j;
+    }
+    // Return the failure function
+    return f;
+}
+
+// Find all occurrences of the pattern string in the text string using the KMP algorithm
+vector<int> kmp_search(const string& text, const string& pattern) {
+    int n = text.size();
+    int m = pattern.size();
+    // Compute the failure function for the pattern string
+    vector<int> f = failure_function(pattern);
+    // Keep track of the indices of matches in the text string
+    vector<int> matches;
+    int j = 0;
+    for (int i = 0; i < n; i++) {
+        // Use previous failure function values to update j
+        while (j > 0 && text[i] != pattern[j]) {
+            j = f[j-1];
+        }
+        // If text[i] matches pattern[j], increment j
+        if (text[i] == pattern[j]) {
+            j++;
+        }
+        // If we have a full match, record the match index and update j using the failure function
+        if (j == m) {
+            matches.push_back(i-m+1);
+            j = f[j-1];
+        }
+    }
+    // Return the vector of match indices
+    return matches;
+}
+
+int main() {
+    string text = "abababcabababcabababc";
+    string pattern = "abababc";
+    // Find all occurrences of the pattern in the text using the KMP algorithm
+    vector<int> matches = kmp_search(text, pattern);
+    // Output the indices of all matches
+    for (int i = 0; i < matches.size(); i++) {
+        cout << "Match found at index " << matches[i] << endl;
+    }
+    return 0;
+}

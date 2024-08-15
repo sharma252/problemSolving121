@@ -1,0 +1,25 @@
+int findLongestConseqSubseq(int arr[], int N){
+  unordered_set<int> s;
+  int max_length=0;
+  
+  for(int i=0;i<N;i++) 
+    s.insert(arr[i]);
+    
+    for(int i=0;i<N;i++){
+        //We will check first if current element is beginning
+        //of the consequete subsequence or not
+        // If yes then only move forward.
+        if(s.find(arr[i]-1)==s.end()){
+            int cur=arr[i];
+            int cur_length=1;
+            //Now check how far this subsequence go
+            //By incrementing cur by one.
+            while(s.find(cur+1) != s.end()){
+                cur++;
+                cur_length++;
+            }
+            max_length = max(max_length,cur_length);
+        }
+    }
+    return max_length;
+}
