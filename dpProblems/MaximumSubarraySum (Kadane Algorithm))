@@ -1,43 +1,65 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define F(i,L,R) for (int i = L; i < R; i++)
 
-//We are taking this global varibale for recursive solution
-int maxSum=INT_MIN;       //-2 11 -4 13 -5 2
+// 1. Recursion
+// Helper: Returns the max subarray sum ending at index 'idx'
+int maxEndingAt(vector<int> &nums, int idx) {
+    if (idx == 0) return nums[0];
 
-int maxSubSumDP(int arr[],int n){
-    //Take two varaible one to calculate max till current element and other for max overall.
-    int maxSoFar=INT_MIN,maxEndingHere=0;
+    int startNewSubarray = nums[idx];
+    int extendPreviousSubarray = maxEndingAt(nums, idx - 1) + nums[idx];
 
-    F(i,0,n){
-        //add every element to max till now
-        maxEndingHere+=arr[i];
-        //Update maxSoFar as necessary.
-        maxSoFar = max(maxSoFar,maxEndingHere);
+    return max(startNewSubarray, extendPreviousSubarray);
+}
 
-        //If max till current element is negative make it zero as we get max sum through positive segment only.
-        if(maxEndingHere<0)
-            maxEndingHere=0;
 
+int maxSubArrayBruteForce(vector<int>& nums) {
+    int n = nums.size();
+    int maxSum = INT_MIN;
+
+    for (int i = 0; i < n; i++) {
+        maxSum = max(maxSum, maxEndingAt(nums, i));
     }
-    return maxSoFar;
 
+    return maxSum;
 }
 
-void maxSubHelper(int arr[],int n, int sum){
-    if (n==0)
-        return ;
+//2. memoization:
+int helper(int idx, vector<int>& nums, vector<int>& mem) {
+    if (idx == 0) return mem[0] = nums[0];
+    if (mem[idx] != INT_MIN) return mem[idx];
 
-    sum += arr[0];
-    maxSum = max(maxSum,sum);
-    
-    sum = sum<0 ? 0 : sum;
-    maxSubHelper(arr+1,n-1,sum);
+    int startNewSubarray = nums[idx];
+    int extendPreviousSubarray = maxEndingAt(nums, idx - 1) + nums[idx];
+
+    mem[idx] = max(startNewSubarray,extendPreviousSubarray );
+    return mem[idx];
 }
 
-void maxSubSum(int arr[],int n){
-    int sum=0;
-    maxSubHelper(arr,n,sum);
+int maxSubArrayMem(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> mem(n, INT_MIN);
+
+    int maxSum = INT_MIN;
+    for (int itr = 0; itr < n; itr++) {
+        maxSum = max(maxSum, helper(itr, nums, mem));
+    }
+    return maxSum;
+}
+
+
+// 3. Tabulation (Bottom-Up)
+int maxSubArrayDP(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> dp(n);
+    dp[0] = nums[0];
+
+    int maxSum = INT_MIN;
+    for (int i = 1; i < n; i++) {
+        dp[i] = max(nums[i], nums[i] + dp[i - 1]);
+        maxSum = max(maxSum, dp[i]);
+    }
+    return maxSum;
 }
 
 int main(){
@@ -51,8 +73,8 @@ int main(){
 
     maxSubSum(arr,n);
 
-    cout<<"Rec ans: "<<maxSum<<endl;
-    cout<<"DP Solution: "<<maxSubSumDP(arr,n)<<endl;
+    cout<<"Rec ans: "<<maxSubArray<<endl;
+    cout<<"DP Solution: "<<maxSubArrayDP(arr,n)<<endl;
 
     return 0;
 }
