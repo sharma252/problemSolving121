@@ -62,6 +62,47 @@ int maxSubArrayDP(vector<int>& nums) {
     return maxSum;
 }
 
+// 5. Kadane's Algorithm (O(1) space)
+int kadane(vector<int>& nums) {
+    int maxSum=nums[0];
+    int curSum=nums[0];
+
+    for(int itr=1;itr<nums.size();itr++){
+        int startNewSubarray = nums[itr];
+        int extendPreviousSubarray = curSum + nums[itr];
+        curSum = max(startNewSubarray,extendPreviousSubarray);
+
+        maxSum = max(maxSum,curSum);
+    }
+
+    return maxSum;
+}
+
+int kadaneWithSubarray(vector<int>& nums) {
+    int maxSum = nums[0];
+    int curSum = nums[0];
+    int startIdx = 0, endIdx = 0, tempStart = 0;
+
+    for (int i = 1; i < nums.size(); ++i) {
+        if (curSum + nums[i] < nums[i]) {
+            curSum = nums[i];
+            tempStart = i;
+        } else {
+            curSum += nums[i];
+        }
+
+        if (curSum > maxSum) {
+            maxSum = curSum;
+            startIdx = tempStart;
+            endIdx = i;
+        }
+    }
+
+    // If you need to return the subarray:
+    // vector<int> subarray(nums.begin() + startIdx, nums.begin() + endIdx + 1);
+    return maxSum;
+}
+
 int main(){
     int n;
     cin>>n;
