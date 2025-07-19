@@ -1,56 +1,84 @@
-//Easier after understanding Knapsack.
-
 #include<bits/stdc++.h>
 using namespace std;
-#define F(i,L,R) for (int i = L; i < R; i++)
 
-//Recursive Solution:
-int subsetSumHelper(int arr[],int n,int sum,int rSum){
-  if(sum==rSum)
-    return true;
+// Recursive helper without memoization
+bool helper(vector<int> &nums, int target, int idx){
+    if(target == 0) return true;          // Found subset with required sum
+    if(target < 0 || idx < 0) return false; // Invalid state
 
-  if(n==0 || sum>rSum)
-    return 0;
+    // Try including or excluding current element
+    bool include = helper(nums, target - nums[idx], idx - 1);
+    bool exclude = helper(nums, target, idx - 1);
 
-  return (subsetSumHelper(arr,n-1,sum+arr[n],rSum) || subsetSumHelper(arr,n-1,sum,rSum));
+    return include || exclude;
 }
 
-int subsetSum(int arr[],int n,int rSum){
-  int sum=0;
-  return (subsetSumHelper(arr,n,sum,rSum));
+// Basic recursive approach
+bool partitionSubset(vector<int> &nums){
+    int totalSum = accumulate(nums.begin(), nums.end(), 0);
+
+    if(totalSum % 2 != 0) return false;  // Odd sum can't be divided equally
+
+    int reqSum = totalSum / 2;
+    return helper(nums, reqSum, nums.size() - 1);
 }
 
-//DP Approach:
-bool subsetSumDP(int arr[],int n,int sum){
-  int dp[n+1][sum+1];
+// Recursive helper with memoization
+bool helper(vector<int> &nums, int target, int idx, vector<vector<int>> &mem){
+    if(target == 0) return true;
+    if(target < 0 || idx < 0) return false;
 
-  for(int i=0;i<=n;i++)
-    dp[i][0]=1;
+    if(mem[idx][target] != -1) return mem[idx][target];
 
-  F(i,1,sum+1)
-    dp[0][i]=0;
+    bool include = helper(nums, target - nums[idx], idx - 1, mem);
+    bool exclude = helper(nums, target, idx - 1, mem);
 
-  for(int i=1;i<=n;i++){
-    for(int j=1;j<=sum;j++){
-      if(arr[i-1]<=j){
-        dp[i][j] = dp[i-1][j] || dp[i-1][j-arr[i-1]];
-      }
-      else 
-        dp[i][j] = dp[i-1][j];
+    return mem[idx][target] = include || exclude;
+}
+
+// Top-down memoization approach
+bool partitionSubsetMem(vector<int> &nums){
+    int totalSum = accumulate(nums.begin(), nums.end(), 0);
+
+    if(totalSum % 2 != 0) return false;
+
+    int reqSum = totalSum / 2;
+    vector<vector<int>> mem(nums.size(), vector<int>(reqSum + 1, -1));
+    return helper(nums, reqSum, nums.size() - 1, mem);
+}
+
+// Bottom-up dynamic programming approach
+bool partitionSubsetDP(vector<int> &nums){
+    int totalSum = accumulate(nums.begin(), nums.end(), 0);
+
+    if(totalSum % 2 != 0) return false;
+
+    int reqSum = totalSum / 2;
+    int n = nums.size();
+    vector<vector<bool>> dp(n, vector<bool>(reqSum + 1, false));
+
+    // Initialize base cases
+    for(int i = 0; i < n; i++) dp[i][0] = true; // sum 0 is always possible
+
+    if(nums[0] <= reqSum) dp[0][nums[0]] = true;
+
+    // Fill dp table
+    for(int i = 1; i < n; i++){
+        for(int target = 0; target <= reqSum; target++){
+            bool exclude = dp[i - 1][target];
+            bool include = (nums[i] <= target) ? dp[i - 1][target - nums[i]] : false;
+            dp[i][target] = include || exclude;
+        }
     }
-  }
-  return dp[n][sum];
+
+    return dp[n - 1][reqSum];
 }
 
 int main(){
-  int n,sum;
-  cin>>n>>sum;
-  int arr[n];
+    vector<int> arr = {1, 5, 11, 5};
 
-  F(i,0,n)
-    cin>>arr[i];
+    cout << partitionSubset(arr) << endl;
+    cout << partitionSubsetMem(arr) << endl;
 
-  cout<<subsetSum(arr,n-1,sum)<<endl;
-  cout<<subsetSumDP(arr,n,sum)<<endl;
-  return 0;
+    return 0;
 }
