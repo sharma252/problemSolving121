@@ -1,93 +1,84 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define F(i,L,R) for (int i = L; i < R; i++)
 
-int lisMem(int arr[],int cur,int mem[]){
-    if(cur==0)
-        return mem[cur];
+// Recursive helper function with memoization to find the length of the Longest Increasing Subsequence (LIS)
+int helper(vector<int> &nums, int idx, int prevIdx, vector<vector<int>> &mem) {
+    // Base case: If we've checked all elements, return 0
+    if (idx == nums.size()) return 0;
 
-    if(mem[cur]!=1)
-        return mem[cur];
+    // If the result is already computed, return it (memoization)
+    if (mem[idx][prevIdx + 1] != -1) return mem[idx][prevIdx + 1];
 
-    int ans=1;
-    for(int i=cur-1;i>=0;i--){
-        if(arr[i]<arr[cur])
-            mem[cur]=ans = max(ans,1+lisMem(arr,i,mem));
+    // Option 1: Skip the current element
+    int notTake = helper(nums, idx + 1, prevIdx, mem);
+
+    int take = 0;
+    // Option 2: Take the current element if it's greater than or equal to the previous one in the subsequence
+    if (prevIdx == -1 || nums[prevIdx] <= nums[idx]) {
+        take = 1 + helper(nums, idx + 1, idx, mem);
     }
-    return mem[cur];
+
+    // Store and return the maximum of taking or not taking the current element
+    return mem[idx][prevIdx + 1] = max(take, notTake);
 }
 
-int lisMem(int arr[],int n){
-    int mem[n+1];
+// Recursive helper function *without* memoization (for comparison or brute-force reference)
+int helper(vector<int> &nums, int idx, int prevIdx) {
+    // Base case: All elements considered
+    if (idx == nums.size()) return 0;
 
-    F(i,0,n+1)
-        mem[i]=1;
+    // Option 1: Skip the current element
+    int notTake = helper(nums, idx + 1, prevIdx);
 
-    int ans=1;
-
-    for(int i=0;i<n;i++){
-        ans = max(ans,lisMem(arr,i,mem));
+    int take = 0;
+    // Option 2: Include current element if it continues the increasing subsequence
+    if (prevIdx == -1 || nums[prevIdx] <= nums[idx]) {
+        take = 1 + helper(nums, idx + 1, idx);
     }
-    return ans;
+
+    // Return the best of both options
+    return max(take, notTake);
 }
 
-int lisHelper(int arr[],int cur){
-    //For 0th element as already disscussed answer should be one.
-    if(cur==0)
-        return 1;
+// Main function to compute the LIS length using memoized recursion
+int lis(vector<int> &nums) {
+    int idx = 0;
+    int prevIdx = -1;
 
-    int ans=1;
-    //Observe clearly for every cur loop is running from cur-1 to cur and passing i as args for further calc.
-    for(int i=cur-1;i>=0;i--){
-        //Self definable logic.
-        if(arr[i]<arr[cur])
-            ans = max(ans,1+lisHelper(arr,i));
-    }
-    //try to do a dry run for better understanding.
-    return ans;
+    // Create a memoization table initialized to -1
+    // Note: We use (prevIdx + 1) to handle the case where prevIdx is -1
+    vector<vector<int>> mem(nums.size(), vector<int>(nums.size() + 1, -1));
 
+    // Use the memoized version of helper
+    return helper(nums, idx, prevIdx, mem);
 }
 
-int lis(int arr[],int n){
-    //Answer gonna be atleast one as every element is itself a increasing subsequence.
-    int ans=1;
 
-    //Traverse through whole array to find the max ans.
-    for(int i=0;i<n;i++)
-        ans = max(ans,lisHelper(arr,i));
-    return ans;
-}
+int lisDP(vector<int> &nums){
+int n = nums.size();
+    if (n == 0) return 0; // Handle empty vector case
+    
+    vector<int> dp(n, 1);
 
-int lisDP(int arr[],int n){
-    int dp[n+1],maxLen=1;
-
-    F(i,0,n+1)
-        dp[i]=1;
-
-    for(int i=1;i<n;i++){
-        //cout<<dp[i]<<endl;
-        for(int j=0;j<i;j++){
-            if(arr[j]<arr[i]){
-                dp[i] = max(dp[i],1+dp[j]);
-                maxLen = max(maxLen,dp[i]);    
+    for (int end_idx = 0; end_idx < n; ++end_idx) {
+        // Look back at all previous elements to find one that can extend an increasing subsequence.
+        for (int prev_idx = 0; prev_idx < end_idx; ++prev_idx) {
+            // extention is only possible if curEle > prevEle
+            if (nums[end_idx] > nums[prev_idx]) {
+                dp[end_idx] = max(dp[end_idx], dp[prev_idx] + 1);   //update length.
             }
         }
     }
-    return maxLen;
+
+    // The length of the LIS is the max value in dp array
+    return *max_element(dp.begin(), dp.end());
 }
 
 int main(){
-    int n,w;
-    cin>>n;
-
-    int arr[n];
-
-    F(i,0,n)
-        cin>>arr[i];
-
-    cout<<lis(arr,n)<<endl;
-    cout<<lisMem(arr,n)<<endl;
-    cout<<lisDP(arr,n)<<endl;
+    vector<int> arr = {10,9,2,5,3,7,101,18};
+    
+    cout<<lis(arr)<<endl;
+    cout<<lisDP(arr)<<endl;
 
     return 0;
 }
